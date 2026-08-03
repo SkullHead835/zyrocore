@@ -1,12 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-export const config = {
-  // Only protect API admin routes at middleware level.
-  // Page-level auth for /admin/* is handled inside the components via localStorage.
-  matcher: ['/api/admin/:path*', '/secure-admin/:path*'],
-}
-
-export async function proxy(req: NextRequest) {
+export default async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   // Public admin auth API endpoints
@@ -42,4 +37,8 @@ export async function proxy(req: NextRequest) {
   }
 
   return NextResponse.next()
+}
+
+export const config = {
+  matcher: ['/api/admin/:path*', '/secure-admin/:path*'],
 }
