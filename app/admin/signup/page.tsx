@@ -44,7 +44,7 @@ export default function AdminSignupPage() {
 
   const fields = [
     { key: 'name', label: 'Full Name', type: 'text', icon: User, placeholder: 'Admin Name' },
-    { key: 'email', label: 'Email', type: 'email', icon: Mail, placeholder: 'admin@aspfashions.com' },
+    { key: 'email', label: 'Email', type: 'email', icon: Mail, placeholder: 'admin@zyrocore.com' },
   ]
 
   return (

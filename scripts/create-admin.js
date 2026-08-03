@@ -11,7 +11,7 @@ console.log('[v0] Generated hash:', hash)
 await sql`
   UPDATE users
   SET password_hash = ${hash}, role = 'admin'
-  WHERE email = 'karmjitn1590@gmail.com'
+  WHERE email = ${process.env.ADMIN_EMAIL || 'admin@zyrocore.com'}
 `
 
 console.log('[v0] Admin user updated successfully')

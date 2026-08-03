@@ -3,9 +3,9 @@ import { neon } from '@neondatabase/serverless'
 
 const sql = neon(process.env.DATABASE_URL)
 
-const email = 'karmjitn1590@gmail.com'
-const password = '123456789'
-const name = 'Admin'
+const email = process.env.ADMIN_EMAIL || 'admin@zyrocore.com'
+const password = process.env.ADMIN_PASSWORD || '123456789'
+const name = process.env.ADMIN_NAME || 'ZYRØCORE Admin'
 
 const hash = await bcrypt.hash(password, 10)
 

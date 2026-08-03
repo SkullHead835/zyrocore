@@ -79,7 +79,7 @@ export default function AdminSetupPage() {
             <Input
               id="email"
               type="email"
-              placeholder="admin@aspfashions.com"
+              placeholder="admin@zyrocore.com"
               value={form.email}
               onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
               required

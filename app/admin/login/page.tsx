@@ -92,7 +92,7 @@ export default function AdminLoginPage() {
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  placeholder="admin@aspfashions.com"
+                  placeholder="admin@zyrocore.com"
                   required
                   suppressHydrationWarning
                   className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#d4a017]/50 focus:ring-1 focus:ring-[#d4a017]/20 transition-colors"
