@@ -6,7 +6,7 @@ export const config = {
   matcher: ['/api/admin/:path*', '/secure-admin/:path*'],
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   // Public admin auth API endpoints
