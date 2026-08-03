@@ -1,7 +1,6 @@
 import Header from '@/components/header'
 import Footer from '@/components/footer'
 import HeroSection from './home/hero-section'
-import CategoryGrid from './home/category-grid'
 import FeaturedProducts from './home/featured-products'
 import BestSellers from './home/best-sellers'
 import BannerStrip from './home/banner-strip'
@@ -27,7 +26,6 @@ export default async function HomePage() {
       <Header />
       <main className="flex-1">
         <HeroSection />
-        <CategoryGrid />
         {hasProds ? (
           <>
             <FeaturedProducts />
