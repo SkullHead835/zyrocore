@@ -1,0 +1,21 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Symbol / Emblem: Oval O cut by bold geometric Z -->
+  <g transform="translate(50, 20)">
+    <!-- O Ring path -->
+    <path d="M150 20 C75 20 20 75 20 150 C20 225 75 280 150 280 C225 280 280 225 280 150 C280 75 225 20 150 20 Z M150 70 C194 70 230 106 230 150 C230 194 194 230 150 230 C106 230 70 194 70 150 C70 106 106 70 150 70 Z" fill="currentColor"/>
+    
+    <!-- Diagonal Z overlay traversing top-right to bottom-left -->
+    <path d="M90 70 L250 20 L160 120 L250 140 L210 180 L80 180 L170 80 L90 80 Z" fill="currentColor"/>
+    <path d="M220 20 L270 20 L110 240 L50 280 L150 160 L70 160 L110 120 L240 120 Z" fill="currentColor"/>
+  </g>
+
+  <!-- Wordmark: ZYRØCORE -->
+  <text x="200" y="340" text-anchor="middle" font-family="'Inter', 'Montserrat', 'Helvetica Neue', sans-serif" font-weight="900" font-size="42" letter-spacing="4" fill="currentColor">
+    ZYRØCORE
+  </text>
+  
+  <!-- Tagline: Build for Ambitious -->
+  <text x="200" y="375" text-anchor="middle" font-family="'Inter', 'Helvetica Neue', sans-serif" font-weight="600" font-size="14" letter-spacing="6" fill="currentColor" opacity="0.8">
+    Build for Ambitious
+  </text>
+</svg>

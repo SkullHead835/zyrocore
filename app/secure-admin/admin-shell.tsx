@@ -1,0 +1,182 @@
+'use client'
+
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
+import {
+  LayoutDashboard, Package, PackagePlus, ShoppingBag,
+  Layers, BarChart2, LogOut, Bell, ChevronRight, Menu, X,
+} from 'lucide-react'
+import { useAdminAuth } from './admin-auth-provider'
+import { useState, useEffect } from 'react'
+import ZyrocoreLogo from '@/components/zyrocore-logo'
+import type { AuthUser } from '@/lib/types'
+
+const NAV = [
+  { href: '/secure-admin',            label: 'Dashboard',   icon: LayoutDashboard, exact: true },
+  { href: '/secure-admin/products',   label: 'Products',    icon: Package,         exact: false },
+  { href: '/secure-admin/products/new', label: 'Add Product', icon: PackagePlus,   exact: false },
+  { href: '/secure-admin/orders',     label: 'Orders',      icon: ShoppingBag,     exact: false },
+  { href: '/secure-admin/inventory',  label: 'Inventory',   icon: Layers,          exact: false },
+  { href: '/secure-admin/analytics',  label: 'Analytics',   icon: BarChart2,       exact: false },
+]
+
+export default function AdminShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+  const router = useRouter()
+  const [user, setUser] = useState<AuthUser | null>(null)
+  const [checking, setChecking] = useState(true)
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  useEffect(() => {
+    const token = typeof window !== 'undefined' ? (localStorage.getItem('adminToken') || localStorage.getItem('userToken')) : null
+    fetch('/api/auth/me', {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data?.user || data.user.role !== 'admin') {
+          router.replace('/secure-admin/login')
+        } else {
+          setUser(data.user)
+        }
+      })
+      .catch(() => router.replace('/secure-admin/login'))
+      .finally(() => setChecking(false))
+  }, [router])
+
+  const handleLogout = async () => {
+    localStorage.removeItem('adminToken')
+    localStorage.removeItem('userToken')
+    await fetch('/api/auth/logout', { method: 'POST' })
+    router.replace('/secure-admin/login')
+  }
+
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-[#d4a017] border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  if (!user) return null
+
+  const Sidebar = () => (
+    <aside className="w-56 bg-[#0f0f0f] border-r border-[#1e1e1e] flex flex-col min-h-screen flex-shrink-0">
+      {/* Brand */}
+      <div className="h-14 flex items-center px-4 border-b border-[#1e1e1e]">
+        <ZyrocoreLogo size="sm" className="invert" />
+      </div>
+
+      {/* Nav */}
+      <nav className="flex-1 py-3 px-2 space-y-0.5">
+        {NAV.map(({ href, label, icon: Icon, exact }) => {
+          const active = exact ? pathname === href : pathname.startsWith(href)
+          return (
+            <Link
+              key={href}
+              href={href}
+              onClick={() => setMobileOpen(false)}
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
+                active
+                  ? 'bg-[#d4a017]/15 text-[#d4a017] font-medium'
+                  : 'text-[#666] hover:text-[#ccc] hover:bg-[#1a1a1a]'
+              }`}
+            >
+              <Icon className="w-4 h-4 flex-shrink-0" />
+              {label}
+            </Link>
+          )
+        })}
+      </nav>
+
+      {/* Logout */}
+      <div className="p-3 border-t border-[#1e1e1e] space-y-2">
+        <button
+          onClick={handleLogout}
+          suppressHydrationWarning
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[#666] hover:text-red-400 hover:bg-red-500/10 transition-colors"
+        >
+          <LogOut className="w-4 h-4" />
+          Logout
+        </button>
+        {user && (
+          <div className="flex items-center gap-2 px-3 py-2">
+            <div className="w-6 h-6 rounded-full bg-[#d4a017] flex items-center justify-center text-black text-xs font-bold flex-shrink-0">
+              {user.name.charAt(0).toUpperCase()}
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs text-white font-medium truncate">{user.name}</p>
+              <p className="text-[10px] text-[#555] truncate">{user.email}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </aside>
+  )
+
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] flex font-sans">
+      {/* Desktop sidebar */}
+      <div className="hidden lg:flex">
+        <Sidebar />
+      </div>
+
+      {/* Mobile sidebar overlay */}
+      {mobileOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 flex">
+          <div className="w-56">
+            <Sidebar />
+          </div>
+          <div className="flex-1 bg-black/60" onClick={() => setMobileOpen(false)} />
+        </div>
+      )}
+
+      {/* Main */}
+      <div className="flex-1 flex flex-col min-h-screen min-w-0">
+        {/* Topbar */}
+        <header className="h-14 bg-[#0f0f0f] border-b border-[#1e1e1e] flex items-center px-4 lg:px-6 gap-4 flex-shrink-0">
+          <button
+            className="lg:hidden text-[#666] hover:text-white"
+            onClick={() => setMobileOpen(v => !v)}
+            suppressHydrationWarning
+          >
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+
+          {/* Breadcrumb path */}
+          <div className="flex items-center gap-1.5 text-sm text-[#555] flex-1 min-w-0">
+            <span className="text-[#d4a017] font-medium">Admin</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+            <span className="text-[#888] truncate capitalize">
+              {pathname.replace('/secure-admin', '').replace(/^\//, '') || 'Dashboard'}
+            </span>
+          </div>
+
+          {/* Right */}
+          <div className="flex items-center gap-3">
+            <button
+              suppressHydrationWarning
+              className="relative w-8 h-8 flex items-center justify-center rounded-lg text-[#666] hover:text-white hover:bg-[#1a1a1a] transition-colors"
+            >
+              <Bell className="w-4 h-4" />
+            </button>
+            {user && (
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-[#d4a017] flex items-center justify-center text-black text-xs font-bold">
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+                <span className="hidden sm:block text-sm text-[#ccc] font-medium">{user.name}</span>
+              </div>
+            )}
+          </div>
+        </header>
+
+        {/* Page content */}
+        <main className="flex-1 overflow-auto">
+          {children}
+        </main>
+      </div>
+    </div>
+  )
+}
