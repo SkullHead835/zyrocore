@@ -68,7 +68,7 @@ export default function AdminSetupPage() {
             <Label htmlFor="name">Full Name</Label>
             <Input
               id="name"
-              placeholder="Admin Name"
+              placeholder="Bharathapriyan"
               value={form.name}
               onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
               required
@@ -79,7 +79,7 @@ export default function AdminSetupPage() {
             <Input
               id="email"
               type="email"
-              placeholder="admin@zyrocore.com"
+              placeholder="bpadmin@zyrocore.in"
               value={form.email}
               onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
               required
