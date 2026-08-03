@@ -122,12 +122,12 @@ export default function ProductForm({ productId }: ProductFormProps) {
     finally { setSaving(false) }
   }
 
-  const inputCls = "w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-3 py-2.5 text-white text-sm placeholder:text-[#444] focus:outline-none focus:border-[#d4a017] transition-colors"
-  const labelCls = "block text-xs font-medium text-[#888] uppercase tracking-wider mb-1.5"
+  const inputCls = "w-full bg-white border border-neutral-200 rounded-lg px-3 py-2.5 text-neutral-900 text-sm placeholder:text-neutral-400 focus:outline-none focus:border-black transition-colors"
+  const labelCls = "block text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-1.5"
 
   if (loading) return (
     <AdminShell>
-      <div className="p-6 text-center text-[#444] text-sm">Loading product...</div>
+      <div className="p-6 text-center text-neutral-400 text-sm font-medium">Loading product...</div>
     </AdminShell>
   )
 
@@ -135,19 +135,19 @@ export default function ProductForm({ productId }: ProductFormProps) {
     <AdminShell>
       <div className="p-6 max-w-3xl">
         <div className="flex items-center gap-3 mb-6">
-          <Link href="/secure-admin/products" className="text-[#555] hover:text-white transition-colors">
+          <Link href="/secure-admin/products" className="text-neutral-400 hover:text-black transition-colors">
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-white text-xl font-bold">{isEdit ? 'Edit Product' : 'Add New Product'}</h1>
-            <p className="text-[#555] text-sm">{isEdit ? 'Update product details' : 'Fill in the details below to list a new product'}</p>
+            <h1 className="text-neutral-900 text-2xl font-bold tracking-tight">{isEdit ? 'Edit Product' : 'Add New Product'}</h1>
+            <p className="text-neutral-500 text-sm">{isEdit ? 'Update product details' : 'Fill in the details below to list a new product'}</p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Basic info */}
-          <div className="bg-[#111] border border-[#1e1e1e] rounded-xl p-5 space-y-4">
-            <h2 className="text-white text-sm font-semibold">Basic Information</h2>
+          <div className="bg-white border border-neutral-200 rounded-xl p-5 space-y-4 shadow-sm">
+            <h2 className="text-neutral-900 text-sm font-bold">Basic Information</h2>
             <div>
               <label className={labelCls}>Product Name *</label>
               <input value={form.name} onChange={e => set('name', e.target.value)} required placeholder="e.g. Men's Slim Fit Shirt" suppressHydrationWarning className={inputCls} />
@@ -166,8 +166,8 @@ export default function ProductForm({ productId }: ProductFormProps) {
           </div>
 
           {/* Pricing */}
-          <div className="bg-[#111] border border-[#1e1e1e] rounded-xl p-5 space-y-4">
-            <h2 className="text-white text-sm font-semibold">Pricing & Stock</h2>
+          <div className="bg-white border border-neutral-200 rounded-xl p-5 space-y-4 shadow-sm">
+            <h2 className="text-neutral-900 text-sm font-bold">Pricing & Stock</h2>
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <label className={labelCls}>Price (₹) *</label>
@@ -185,10 +185,10 @@ export default function ProductForm({ productId }: ProductFormProps) {
           </div>
 
           {/* Images */}
-          <div className="bg-[#111] border border-[#1e1e1e] rounded-xl p-5 space-y-3">
+          <div className="bg-white border border-neutral-200 rounded-xl p-5 space-y-3 shadow-sm">
             <div className="flex items-center justify-between">
-              <h2 className="text-white text-sm font-semibold">Product Images</h2>
-              <span className="text-[#555] text-xs">PNG, JPG, JPEG, SVG</span>
+              <h2 className="text-neutral-900 text-sm font-bold">Product Images</h2>
+              <span className="text-neutral-400 text-xs font-medium">PNG, JPG, JPEG, SVG</span>
             </div>
 
             {/* Drop zone */}
@@ -197,7 +197,7 @@ export default function ProductForm({ productId }: ProductFormProps) {
               onDragLeave={() => setDragOver(false)}
               onDrop={e => { e.preventDefault(); setDragOver(false); if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files) }}
               className={`relative border-2 border-dashed rounded-xl transition-colors cursor-pointer ${
-                dragOver ? 'border-[#d4a017] bg-[#d4a017]/5' : 'border-[#2a2a2a] hover:border-[#444]'
+                dragOver ? 'border-black bg-neutral-50' : 'border-neutral-200 hover:border-neutral-400'
               }`}
               onClick={() => !uploadingImages && document.getElementById('img-file-input')?.click()}
             >
@@ -212,18 +212,18 @@ export default function ProductForm({ productId }: ProductFormProps) {
               <div className="flex flex-col items-center justify-center py-8 gap-2 select-none pointer-events-none">
                 {uploadingImages ? (
                   <>
-                    <div className="w-8 h-8 border-2 border-[#d4a017] border-t-transparent rounded-full animate-spin" />
-                    <p className="text-[#888] text-sm">Uploading...</p>
+                    <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                    <p className="text-neutral-400 text-sm font-medium">Uploading...</p>
                   </>
                 ) : (
                   <>
-                    <svg className="w-8 h-8 text-[#444]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-8 h-8 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4-4a3 3 0 014.24 0L16 16m-2-2l1.59-1.59a3 3 0 014.24 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <p className="text-[#888] text-sm">
-                      <span className="text-[#d4a017] font-medium">Click to upload</span> or drag & drop
+                    <p className="text-neutral-500 text-sm">
+                      <span className="text-black font-semibold underline">Click to upload</span> or drag & drop
                     </p>
-                    <p className="text-[#555] text-xs">PNG, JPG, JPEG, SVG supported • Multiple files allowed</p>
+                    <p className="text-neutral-400 text-xs">PNG, JPG, JPEG, SVG supported • Multiple files allowed</p>
                   </>
                 )}
               </div>
@@ -237,10 +237,10 @@ export default function ProductForm({ productId }: ProductFormProps) {
                     <img
                       src={url}
                       alt={`Product image ${idx + 1}`}
-                      className="w-full h-full object-cover rounded-lg border border-[#2a2a2a] bg-[#1a1a1a]"
+                      className="w-full h-full object-cover rounded-lg border border-neutral-200 bg-neutral-50"
                     />
                     {idx === 0 && (
-                      <span className="absolute bottom-0 left-0 right-0 bg-[#d4a017] text-black text-[9px] font-bold text-center py-0.5 rounded-b-lg">MAIN</span>
+                      <span className="absolute bottom-0 left-0 right-0 bg-black text-white text-[9px] font-bold text-center py-0.5 rounded-b-lg">MAIN</span>
                     )}
                     <button
                       type="button"
@@ -258,8 +258,8 @@ export default function ProductForm({ productId }: ProductFormProps) {
 
 
           {/* Sizes */}
-          <div className="bg-[#111] border border-[#1e1e1e] rounded-xl p-5 space-y-3">
-            <h2 className="text-white text-sm font-semibold">Sizes (optional)</h2>
+          <div className="bg-white border border-neutral-200 rounded-xl p-5 space-y-3 shadow-sm">
+            <h2 className="text-neutral-900 text-sm font-bold">Sizes (optional)</h2>
             <div className="flex gap-2">
               <input
                 value={sizeInput} onChange={e => setSizeInput(e.target.value)}
@@ -268,16 +268,16 @@ export default function ProductForm({ productId }: ProductFormProps) {
                 className={inputCls + ' flex-1'}
                 onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addSize())}
               />
-              <button type="button" onClick={addSize} suppressHydrationWarning className="bg-[#1e1e1e] hover:bg-[#2a2a2a] text-white rounded-lg px-3 text-sm transition-colors">
+              <button type="button" onClick={addSize} suppressHydrationWarning className="bg-neutral-100 hover:bg-neutral-200 text-neutral-800 border border-neutral-200 rounded-lg px-3 text-sm transition-colors">
                 <Plus className="w-4 h-4" />
               </button>
             </div>
             {form.sizes.length > 0 && (
               <div className="flex flex-wrap gap-1.5">
                 {form.sizes.map(s => (
-                  <span key={s} className="inline-flex items-center gap-1 bg-[#1e1e1e] text-[#ccc] text-xs px-2.5 py-1 rounded-lg">
+                  <span key={s} className="inline-flex items-center gap-1 bg-neutral-100 text-neutral-800 text-xs px-2.5 py-1 rounded-lg border border-neutral-200">
                     {s}
-                    <button type="button" onClick={() => removeSize(s)} suppressHydrationWarning className="text-[#555] hover:text-red-400 ml-0.5">
+                    <button type="button" onClick={() => removeSize(s)} suppressHydrationWarning className="text-neutral-400 hover:text-red-500 ml-0.5">
                       <X className="w-3 h-3" />
                     </button>
                   </span>
@@ -287,8 +287,8 @@ export default function ProductForm({ productId }: ProductFormProps) {
           </div>
 
           {/* Flags */}
-          <div className="bg-[#111] border border-[#1e1e1e] rounded-xl p-5 space-y-3">
-            <h2 className="text-white text-sm font-semibold">Labels</h2>
+          <div className="bg-white border border-neutral-200 rounded-xl p-5 space-y-3 shadow-sm">
+            <h2 className="text-neutral-900 text-sm font-bold">Labels</h2>
             <div className="flex gap-6">
               {[
                 { key: 'is_featured', label: 'Featured Product' },
@@ -298,14 +298,14 @@ export default function ProductForm({ productId }: ProductFormProps) {
                   <div
                     className={`w-4 h-4 rounded border flex items-center justify-center cursor-pointer transition-colors ${
                       form[key as keyof typeof form]
-                        ? 'bg-[#d4a017] border-[#d4a017]'
-                        : 'border-[#333] bg-[#1a1a1a]'
+                        ? 'bg-black border-black text-white'
+                        : 'border-neutral-300 bg-white'
                     }`}
                     onClick={() => set(key, !form[key as keyof typeof form])}
                   >
-                    {form[key as keyof typeof form] && <span className="text-black text-[10px] font-bold">✓</span>}
+                    {form[key as keyof typeof form] && <span className="text-white text-[10px] font-bold">✓</span>}
                   </div>
-                  <span className="text-[#aaa] text-sm">{label}</span>
+                  <span className="text-neutral-700 text-sm font-semibold">{label}</span>
                 </label>
               ))}
             </div>
@@ -317,11 +317,11 @@ export default function ProductForm({ productId }: ProductFormProps) {
               type="submit"
               disabled={saving}
               suppressHydrationWarning
-              className="bg-[#d4a017] hover:bg-[#e6b01e] disabled:opacity-50 text-black font-semibold px-6 py-2.5 rounded-lg text-sm transition-colors"
+              className="bg-black hover:bg-neutral-900 disabled:opacity-50 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-colors shadow-sm"
             >
               {saving ? 'Saving...' : isEdit ? 'Update Product' : 'Add Product'}
             </button>
-            <Link href="/secure-admin/products" className="text-[#666] hover:text-white text-sm transition-colors">
+            <Link href="/secure-admin/products" className="text-neutral-500 hover:text-black text-sm font-semibold transition-colors">
               Cancel
             </Link>
           </div>

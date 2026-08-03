@@ -51,44 +51,44 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8 flex flex-col items-center">
-          <div className="bg-[#111] p-3 rounded-2xl border border-[#222] mb-4 inline-block">
-            <ZyrocoreLogo showTagline size="md" />
+          <div className="bg-white p-3 rounded-2xl border border-neutral-200 mb-4 inline-block shadow-sm">
+            <ZyrocoreLogo showTagline size="md" invertInDark={false} className="text-black" />
           </div>
-          <h1 className="text-white text-2xl font-semibold">Admin Portal</h1>
-          <p className="text-[#666] text-sm mt-1">Sign in to your ZYRØCORE admin account</p>
+          <h1 className="text-neutral-900 text-2xl font-bold tracking-tight">Admin Portal</h1>
+          <p className="text-neutral-500 text-sm mt-1">Sign in to your ZYRØCORE admin account</p>
         </div>
 
         {/* Card */}
-        <div className="bg-[#111] border border-[#222] rounded-2xl p-6">
+        <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-sm">
           {error && (
-            <div className="mb-4 px-3 py-2.5 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+            <div className="mb-4 px-3 py-2.5 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
               {error}
             </div>
           )}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[#aaa] mb-1.5">Email</label>
+              <label className="block text-sm font-medium text-neutral-700 mb-1.5">Email</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#555]" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                 <input
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  placeholder="admin@zyrocore.com"
+                  placeholder="admin@zyrocore.in"
                   required
                   suppressHydrationWarning
-                  className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg pl-9 pr-3 py-2.5 text-white text-sm placeholder:text-[#444] focus:outline-none focus:border-[#d4a017] transition-colors"
+                  className="w-full bg-white border border-neutral-200 rounded-lg pl-9 pr-3 py-2.5 text-neutral-900 text-sm placeholder:text-neutral-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-colors"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#aaa] mb-1.5">Password</label>
+              <label className="block text-sm font-medium text-neutral-700 mb-1.5">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#555]" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
@@ -96,13 +96,13 @@ export default function AdminLoginPage() {
                   placeholder="••••••••"
                   required
                   suppressHydrationWarning
-                  className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg pl-9 pr-10 py-2.5 text-white text-sm placeholder:text-[#444] focus:outline-none focus:border-[#d4a017] transition-colors"
+                  className="w-full bg-white border border-neutral-200 rounded-lg pl-9 pr-10 py-2.5 text-neutral-900 text-sm placeholder:text-neutral-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(v => !v)}
                   suppressHydrationWarning
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#555] hover:text-[#aaa] transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -112,14 +112,14 @@ export default function AdminLoginPage() {
               type="submit"
               disabled={loading}
               suppressHydrationWarning
-              className="w-full bg-[#d4a017] hover:bg-[#e6b01e] disabled:opacity-50 text-black font-semibold py-2.5 rounded-lg text-sm transition-colors mt-1"
+              className="w-full bg-black hover:bg-neutral-900 disabled:opacity-50 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors mt-1"
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
         </div>
 
-        <p className="text-center text-[#444] text-xs mt-6">
+        <p className="text-center text-neutral-400 text-xs mt-6">
           Admin access only. Unauthorized access is prohibited.
         </p>
       </div>

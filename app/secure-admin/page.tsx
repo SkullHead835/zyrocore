@@ -40,24 +40,24 @@ function fmtDate(s: string) {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  pending: 'text-yellow-400 bg-yellow-400/10',
-  confirmed: 'text-blue-400 bg-blue-400/10',
-  shipped: 'text-indigo-400 bg-indigo-400/10',
-  delivered: 'text-green-400 bg-green-400/10',
-  cancelled: 'text-red-400 bg-red-400/10',
+  pending: 'text-amber-700 bg-amber-50 border border-amber-200',
+  confirmed: 'text-blue-700 bg-blue-50 border border-blue-200',
+  shipped: 'text-indigo-700 bg-indigo-50 border border-indigo-200',
+  delivered: 'text-green-700 bg-green-50 border border-green-200',
+  cancelled: 'text-red-700 bg-red-50 border border-red-200',
 }
 
 const StatCard = ({ label, value, icon: Icon, sub, gold }: {
   label: string; value: string; icon: React.ElementType; sub?: string; gold?: boolean
 }) => (
-  <div className="bg-[#111] border border-[#1e1e1e] rounded-xl p-5 flex items-start gap-4">
-    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${gold ? 'bg-[#d4a017]/15' : 'bg-[#1e1e1e]'}`}>
-      <Icon className={`w-5 h-5 ${gold ? 'text-[#d4a017]' : 'text-[#666]'}`} />
+  <div className="bg-white border border-neutral-200 rounded-xl p-5 flex items-start gap-4 shadow-sm">
+    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${gold ? 'bg-black text-white' : 'bg-neutral-100 text-neutral-600'}`}>
+      <Icon className="w-5 h-5" />
     </div>
     <div className="min-w-0">
-      <p className="text-[#555] text-xs font-medium uppercase tracking-wider mb-1">{label}</p>
-      <p className={`text-2xl font-bold ${gold ? 'text-[#d4a017]' : 'text-white'}`}>{value}</p>
-      {sub && <p className="text-xs text-[#555] mt-0.5">{sub}</p>}
+      <p className="text-neutral-500 text-xs font-semibold uppercase tracking-wider mb-1">{label}</p>
+      <p className="text-2xl font-bold text-neutral-900">{value}</p>
+      {sub && <p className="text-xs text-neutral-400 mt-0.5">{sub}</p>}
     </div>
   </div>
 )
@@ -95,12 +95,12 @@ export default function AdminDashboardPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-white text-xl font-bold">Dashboard</h1>
-            <p className="text-[#555] text-sm mt-0.5">Welcome back. Here is what is happening today.</p>
+            <h1 className="text-neutral-900 text-2xl font-bold tracking-tight">Dashboard</h1>
+            <p className="text-neutral-500 text-sm mt-0.5">Welcome back. Here is what is happening today.</p>
           </div>
           <Link
             href="/secure-admin/products/new"
-            className="inline-flex items-center gap-2 bg-[#d4a017] hover:bg-[#e6b01e] text-black text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+            className="inline-flex items-center gap-2 bg-black hover:bg-neutral-900 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors shadow-sm"
           >
             <PackagePlus className="w-4 h-4" />
             Add Product
@@ -124,52 +124,52 @@ export default function AdminDashboardPage() {
         {/* Charts + Recent orders */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Orders by status chart */}
-          <div className="bg-[#111] border border-[#1e1e1e] rounded-xl p-5">
-            <h2 className="text-white text-sm font-semibold mb-4">Orders by Status</h2>
+          <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm">
+            <h2 className="text-neutral-900 text-sm font-bold mb-4">Orders by Status</h2>
             {chartData.length === 0 ? (
-              <div className="h-48 flex items-center justify-center text-[#444] text-sm">No orders yet</div>
+              <div className="h-48 flex items-center justify-center text-neutral-400 text-sm">No orders yet</div>
             ) : (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={chartData} barSize={28}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1e1e1e" />
-                  <XAxis dataKey="name" tick={{ fill: '#666', fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: '#666', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="name" tick={{ fill: '#888', fontSize: 11 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: '#888', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
                   <Tooltip
-                    contentStyle={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 8, color: '#fff' }}
-                    cursor={{ fill: '#ffffff08' }}
+                    contentStyle={{ background: '#fff', border: '1px solid #e5e5e5', borderRadius: 8, color: '#000' }}
+                    cursor={{ fill: '#00000005' }}
                   />
-                  <Bar dataKey="orders" fill="#d4a017" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="orders" fill="#000" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}
           </div>
 
           {/* Recent orders */}
-          <div className="bg-[#111] border border-[#1e1e1e] rounded-xl p-5">
+          <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-white text-sm font-semibold">Recent Orders</h2>
-              <Link href="/secure-admin/orders" className="text-[#d4a017] text-xs hover:underline flex items-center gap-1">
+              <h2 className="text-neutral-900 text-sm font-bold">Recent Orders</h2>
+              <Link href="/secure-admin/orders" className="text-black font-semibold text-xs hover:underline flex items-center gap-1">
                 View all <ArrowUpRight className="w-3 h-3" />
               </Link>
             </div>
             {recentOrders.length === 0 ? (
-              <div className="h-48 flex items-center justify-center text-[#444] text-sm">No orders yet</div>
+              <div className="h-48 flex items-center justify-center text-neutral-400 text-sm">No orders yet</div>
             ) : (
               <div className="space-y-3">
                 {recentOrders.map(order => (
-                  <div key={order.id} className="flex items-center justify-between py-2 border-b border-[#1a1a1a] last:border-0">
+                  <div key={order.id} className="flex items-center justify-between py-2 border-b border-neutral-100 last:border-0">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-[#888] text-xs font-mono">#{order.id}</span>
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-medium ${STATUS_COLOR[order.status] ?? 'text-[#666] bg-[#1e1e1e]'}`}>
+                        <span className="text-neutral-400 text-xs font-mono">#{order.id}</span>
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-medium border ${STATUS_COLOR[order.status] ?? 'text-neutral-600 bg-neutral-50 border-neutral-200'}`}>
                           {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                         </span>
                       </div>
-                      <p className="text-white text-sm font-medium truncate mt-0.5">{order.user_name || 'Guest'}</p>
-                      <p className="text-[#555] text-xs">{fmtDate(order.created_at)}</p>
+                      <p className="text-neutral-900 text-sm font-semibold truncate mt-0.5">{order.user_name || 'Guest'}</p>
+                      <p className="text-neutral-400 text-xs">{fmtDate(order.created_at)}</p>
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <p className="text-[#d4a017] font-semibold text-sm">{formatINR(order.total)}</p>
+                      <p className="text-neutral-950 font-bold text-sm">{formatINR(order.total)}</p>
                     </div>
                   </div>
                 ))}
@@ -190,12 +190,12 @@ export default function AdminDashboardPage() {
             <Link
               key={href}
               href={href}
-              className="bg-[#111] border border-[#1e1e1e] hover:border-[#d4a017]/40 rounded-xl p-4 flex items-center gap-3 transition-colors group"
+              className="bg-white border border-neutral-200 hover:border-black rounded-xl p-4 flex items-center gap-3 transition-all duration-200 shadow-sm hover:shadow-md group"
             >
-              <div className="w-8 h-8 bg-[#1e1e1e] group-hover:bg-[#d4a017]/15 rounded-lg flex items-center justify-center transition-colors">
-                <Icon className="w-4 h-4 text-[#666] group-hover:text-[#d4a017] transition-colors" />
+              <div className="w-8 h-8 bg-neutral-100 group-hover:bg-black rounded-lg flex items-center justify-center transition-colors">
+                <Icon className="w-4 h-4 text-neutral-600 group-hover:text-white transition-colors" />
               </div>
-              <span className="text-[#888] group-hover:text-white text-sm font-medium transition-colors">{label}</span>
+              <span className="text-neutral-700 group-hover:text-neutral-950 text-sm font-semibold transition-colors">{label}</span>
             </Link>
           ))}
         </div>

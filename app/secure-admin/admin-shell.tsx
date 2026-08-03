@@ -53,8 +53,8 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 
   if (checking) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-[#d4a017] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -62,10 +62,10 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   if (!user) return null
 
   const Sidebar = () => (
-    <aside className="w-56 bg-[#0f0f0f] border-r border-[#1e1e1e] flex flex-col min-h-screen flex-shrink-0">
+    <aside className="w-56 bg-black flex flex-col min-h-screen flex-shrink-0">
       {/* Brand */}
-      <div className="h-14 flex items-center px-4 border-b border-[#1e1e1e]">
-        <ZyrocoreLogo size="sm" className="invert" />
+      <div className="h-14 flex items-center px-4 border-b border-neutral-800">
+        <ZyrocoreLogo size="sm" className="invert" invertInDark={false} />
       </div>
 
       {/* Nav */}
@@ -79,8 +79,8 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
               onClick={() => setMobileOpen(false)}
               className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
                 active
-                  ? 'bg-[#d4a017]/15 text-[#d4a017] font-medium'
-                  : 'text-[#666] hover:text-[#ccc] hover:bg-[#1a1a1a]'
+                  ? 'bg-neutral-900 text-white font-medium'
+                  : 'text-neutral-400 hover:text-white hover:bg-neutral-900/60'
               }`}
             >
               <Icon className="w-4 h-4 flex-shrink-0" />
@@ -91,23 +91,23 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       </nav>
 
       {/* Logout */}
-      <div className="p-3 border-t border-[#1e1e1e] space-y-2">
+      <div className="p-3 border-t border-neutral-800 space-y-2">
         <button
           onClick={handleLogout}
           suppressHydrationWarning
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[#666] hover:text-red-400 hover:bg-red-500/10 transition-colors"
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-neutral-400 hover:text-red-400 hover:bg-neutral-900 transition-colors"
         >
           <LogOut className="w-4 h-4" />
           Logout
         </button>
         {user && (
           <div className="flex items-center gap-2 px-3 py-2">
-            <div className="w-6 h-6 rounded-full bg-[#d4a017] flex items-center justify-center text-black text-xs font-bold flex-shrink-0">
+            <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-black text-xs font-bold flex-shrink-0">
               {user.name.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
               <p className="text-xs text-white font-medium truncate">{user.name}</p>
-              <p className="text-[10px] text-[#555] truncate">{user.email}</p>
+              <p className="text-[10px] text-neutral-500 truncate">{user.email}</p>
             </div>
           </div>
         )}
@@ -116,7 +116,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   )
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex font-sans">
+    <div className="min-h-screen bg-neutral-50 flex font-sans text-neutral-900">
       {/* Desktop sidebar */}
       <div className="hidden lg:flex">
         <Sidebar />
@@ -135,9 +135,9 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       {/* Main */}
       <div className="flex-1 flex flex-col min-h-screen min-w-0">
         {/* Topbar */}
-        <header className="h-14 bg-[#0f0f0f] border-b border-[#1e1e1e] flex items-center px-4 lg:px-6 gap-4 flex-shrink-0">
+        <header className="h-14 bg-white border-b border-neutral-200 flex items-center px-4 lg:px-6 gap-4 flex-shrink-0">
           <button
-            className="lg:hidden text-[#666] hover:text-white"
+            className="lg:hidden text-neutral-500 hover:text-black"
             onClick={() => setMobileOpen(v => !v)}
             suppressHydrationWarning
           >
@@ -145,10 +145,10 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           </button>
 
           {/* Breadcrumb path */}
-          <div className="flex items-center gap-1.5 text-sm text-[#555] flex-1 min-w-0">
-            <span className="text-[#d4a017] font-medium">Admin</span>
+          <div className="flex items-center gap-1.5 text-sm text-neutral-400 flex-1 min-w-0">
+            <span className="text-black font-semibold">Admin</span>
             <ChevronRight className="w-3.5 h-3.5" />
-            <span className="text-[#888] truncate capitalize">
+            <span className="text-neutral-600 font-medium truncate capitalize">
               {pathname.replace('/secure-admin', '').replace(/^\//, '') || 'Dashboard'}
             </span>
           </div>
@@ -157,16 +157,16 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           <div className="flex items-center gap-3">
             <button
               suppressHydrationWarning
-              className="relative w-8 h-8 flex items-center justify-center rounded-lg text-[#666] hover:text-white hover:bg-[#1a1a1a] transition-colors"
+              className="relative w-8 h-8 flex items-center justify-center rounded-lg text-neutral-500 hover:text-black hover:bg-neutral-100 transition-colors"
             >
               <Bell className="w-4 h-4" />
             </button>
             {user && (
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-[#d4a017] flex items-center justify-center text-black text-xs font-bold">
+                <div className="w-7 h-7 rounded-full bg-black flex items-center justify-center text-white text-xs font-bold">
                   {user.name.charAt(0).toUpperCase()}
                 </div>
-                <span className="hidden sm:block text-sm text-[#ccc] font-medium">{user.name}</span>
+                <span className="hidden sm:block text-sm text-neutral-700 font-medium">{user.name}</span>
               </div>
             )}
           </div>
