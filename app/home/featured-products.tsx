@@ -30,7 +30,7 @@ export default async function FeaturedProducts() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-bold text-foreground text-balance">Featured Styles</h2>
-          <p className="text-sm text-muted-foreground mt-0.5">Hand-picked looks from ASP Fashions</p>
+          <p className="text-sm text-muted-foreground mt-0.5">Hand-picked looks from Zyrocore</p>
         </div>
         <Link href="/products?featured=true" className="flex items-center gap-1.5 text-sm font-medium text-foreground hover:opacity-70 transition-opacity">
           View All <ArrowRight className="w-4 h-4" />

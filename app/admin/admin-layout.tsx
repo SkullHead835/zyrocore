@@ -68,7 +68,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
             <div className="min-w-0">
               <p className="text-xs font-medium truncate">Admin</p>
-              <p className="text-xs text-background/50 truncate">ASP Fashions</p>
+              <p className="text-xs text-background/50 truncate">Zyrocore</p>
             </div>
           </div>
           <Link href="/" className="flex items-center gap-1.5 text-xs text-background/50 hover:text-background mt-3 transition-colors">

@@ -113,7 +113,7 @@ export default function AdminPaymentSettingsPage() {
                   <Input
                     value={businessName}
                     onChange={e => setBusinessName(e.target.value)}
-                    placeholder="ASP Fashion Men Shirt"
+                    placeholder="Zyrocore Men's Shirt"
                     suppressHydrationWarning
                   />
                 </div>

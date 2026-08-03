@@ -6,8 +6,8 @@ import { Toaster } from '@/components/ui/sonner'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'ASP Fashions — Admin',
-  description: 'Internal admin panel for ASP Fashions',
+  title: 'ZYRØCORE — Admin Panel',
+  description: 'Internal admin panel for Zyrocore',
   robots: 'noindex, nofollow',
 }
 

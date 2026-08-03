@@ -54,13 +54,13 @@ export default function AdminSignupPage() {
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
             <img
-              src="/logo.jpeg"
-              alt="ASP Fashions Admin"
+              src="/logo-emblem.png"
+              alt="Zyrocore Admin"
               className="h-20 w-auto object-contain rounded-xl shadow-lg shadow-black/40"
             />
           </div>
           <h1 className="text-2xl font-bold text-white tracking-tight">
-            ASP <span className="text-[#d4a017]">Admin</span>
+            ZYRØCORE <span className="text-[#d4a017]">Admin</span>
           </h1>
           <p className="text-sm text-white/40 mt-1">Create your admin account</p>
         </div>
