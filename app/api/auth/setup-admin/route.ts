@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import sql from '@/lib/db'
 
-const ADMIN_SECRET = 'ASPFASHIONS2025'
+const ADMIN_SECRET = 'ZYROCORE2026'
 
 export async function POST(req: NextRequest) {
   try {

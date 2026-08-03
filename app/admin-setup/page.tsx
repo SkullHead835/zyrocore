@@ -20,7 +20,7 @@ export default function AdminSetupPage() {
       toast.error('All fields are required')
       return
     }
-    if (form.secret !== 'ASPFASHIONS2025') {
+    if (form.secret !== 'ZYROCORE2026') {
       toast.error('Incorrect admin secret key')
       return
     }
@@ -106,7 +106,7 @@ export default function AdminSetupPage() {
               onChange={e => setForm(f => ({ ...f, secret: e.target.value }))}
               required
             />
-            <p className="text-xs text-muted-foreground">Secret: ASPFASHIONS2025</p>
+            <p className="text-xs text-muted-foreground">Secret: ZYROCORE2026</p>
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? 'Creating Account...' : 'Create Admin Account'}
