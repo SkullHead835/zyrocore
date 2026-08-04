@@ -155,7 +155,7 @@ export default function Header() {
       {/* Main nav */}
       <div className="hidden md:block border-t border-border bg-background/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4">
-          <nav className="flex items-center gap-12 h-12 text-xs uppercase tracking-widest" aria-label="Main">
+          <nav className="flex items-center justify-center gap-12 h-12 text-xs uppercase tracking-widest" aria-label="Main">
             {mainNav.map(item => (
               <Link
                 key={item.href}
