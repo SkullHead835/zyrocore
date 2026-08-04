@@ -51,8 +51,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-background border-b border-border shadow-sm">
       {/* Top bar */}
       <div className="bg-foreground text-background py-1.5 text-center text-xs font-medium tracking-wide">
-        Free shipping on orders over ₹999 &nbsp;|&nbsp; Use code ZYRO10 for 10% off your first order
-      </div>
+        Free shipping on orders over ₹999</div>
 
       {/* Main header */}
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center gap-4">
