@@ -18,13 +18,11 @@ import ZyrocoreLogo from './zyrocore-logo'
 import { useAuth } from './auth-provider'
 import { useCart } from './cart-provider'
 
-const categories = [
-  { label: 'Formals', slug: 'formals' },
-  { label: 'Casuals', slug: 'casuals' },
-  { label: 'Party Wear', slug: 'party-wear' },
-  { label: 'Premium Collection', slug: 'premium-collection' },
-  { label: 'New Arrivals', slug: 'new-arrivals' },
-  { label: 'Sale', slug: 'sale' },
+const mainNav = [
+  { label: 'Home', href: '/' },
+  { label: 'Shop', href: '/products' },
+  { label: 'Story', href: '/story' },
+  { label: 'Contact', href: '#contact' },
 ]
 
 export default function Header() {
@@ -48,13 +46,13 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-background border-b border-border shadow-sm">
+    <header className="sticky top-0 z-50 bg-background border-b border-border">
       {/* Top bar */}
-      <div className="bg-foreground text-background py-1.5 text-center text-xs font-medium tracking-wide">
+      <div className="bg-accent text-accent-foreground py-2 text-center text-xs font-medium tracking-widest uppercase">
         Free shipping on orders over ₹999</div>
 
       {/* Main header */}
-      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center gap-4">
+      <div className="max-w-7xl mx-auto px-4 h-20 flex items-center gap-6">
         {/* Logo */}
         <Link href="/" className="flex-shrink-0 flex items-center">
           <ZyrocoreLogo size="md" />
@@ -154,32 +152,26 @@ export default function Header() {
         </nav>
       </div>
 
-      {/* Category nav */}
-      <div className="hidden md:block border-t border-border bg-background">
+      {/* Main nav */}
+      <div className="hidden md:block border-t border-border bg-background/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4">
-          <nav className="flex items-center gap-6 h-10 text-sm" aria-label="Categories">
-            <Link href="/products" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
-              All
-            </Link>
-            {categories.map(cat => (
+          <nav className="flex items-center justify-center gap-12 h-12 text-xs uppercase tracking-widest" aria-label="Main">
+            {mainNav.map(item => (
               <Link
-                key={cat.slug}
-                href={`/products?category=${cat.slug}`}
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                key={item.href}
+                href={item.href}
+                className="text-foreground hover:text-muted-foreground transition-colors font-semibold"
               >
-                {cat.label}
+                {item.label}
               </Link>
             ))}
-            <Link href="/products?best_seller=true" className="text-muted-foreground hover:text-foreground transition-colors ml-auto font-medium">
-              Best Sellers
-            </Link>
           </nav>
         </div>
       </div>
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="sm:hidden border-t border-border bg-background px-4 py-4 space-y-3">
+        <div className="sm:hidden border-t border-border bg-background px-4 py-4 space-y-4">
           <form onSubmit={handleSearch} className="flex gap-2">
             <Input
               value={search}
@@ -189,28 +181,34 @@ export default function Header() {
             />
             <Button type="submit" size="sm">Search</Button>
           </form>
-          <div className="flex flex-col gap-1">
-            <Link href="/products" className="py-2 text-sm hover:text-foreground" onClick={() => setMobileOpen(false)}>All Products</Link>
-            {categories.map(cat => (
-              <Link key={cat.slug} href={`/products?category=${cat.slug}`} className="py-2 text-sm hover:text-foreground" onClick={() => setMobileOpen(false)}>
-                {cat.label}
+          <nav className="flex flex-col gap-1 border-b border-border pb-4">
+            {mainNav.map(item => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="py-2.5 text-sm font-medium hover:text-muted-foreground transition-colors"
+                onClick={() => setMobileOpen(false)}
+              >
+                {item.label}
               </Link>
             ))}
-            <Link href="/cart" className="py-2 text-sm hover:text-foreground" onClick={() => setMobileOpen(false)}>Cart ({cartCount})</Link>
-            <Link href="/wishlist" className="py-2 text-sm hover:text-foreground" onClick={() => setMobileOpen(false)}>Wishlist</Link>
+          </nav>
+          <div className="flex flex-col gap-1">
+            <Link href="/cart" className="py-2 text-sm hover:text-muted-foreground" onClick={() => setMobileOpen(false)}>Cart ({cartCount})</Link>
+            <Link href="/wishlist" className="py-2 text-sm hover:text-muted-foreground" onClick={() => setMobileOpen(false)}>Wishlist</Link>
             {user ? (
               <>
-                <Link href="/account" className="py-2 text-sm hover:text-foreground" onClick={() => setMobileOpen(false)}>My Account</Link>
-                <Link href="/orders" className="py-2 text-sm hover:text-foreground" onClick={() => setMobileOpen(false)}>My Orders</Link>
+                <Link href="/account" className="py-2 text-sm hover:text-muted-foreground" onClick={() => setMobileOpen(false)}>My Account</Link>
+                <Link href="/orders" className="py-2 text-sm hover:text-muted-foreground" onClick={() => setMobileOpen(false)}>My Orders</Link>
                 {user.role === 'admin' && (
-                  <Link href="/secure-admin" className="py-2.5 min-h-[44px] flex items-center text-sm font-medium hover:text-foreground" onClick={() => setMobileOpen(false)}>Admin Dashboard</Link>
+                  <Link href="/secure-admin" className="py-2.5 min-h-[44px] flex items-center text-sm font-medium hover:text-muted-foreground" onClick={() => setMobileOpen(false)}>Admin Dashboard</Link>
                 )}
                 <button onClick={handleLogout} className="py-2 text-sm text-destructive text-left">Sign Out</button>
               </>
             ) : (
               <>
-                <Link href="/login" className="py-2 text-sm hover:text-foreground" onClick={() => setMobileOpen(false)}>Sign In</Link>
-                <Link href="/register" className="py-2 text-sm hover:text-foreground" onClick={() => setMobileOpen(false)}>Sign Up</Link>
+                <Link href="/login" className="py-2 text-sm hover:text-muted-foreground" onClick={() => setMobileOpen(false)}>Sign In</Link>
+                <Link href="/register" className="py-2 text-sm hover:text-muted-foreground" onClick={() => setMobileOpen(false)}>Sign Up</Link>
               </>
             )}
           </div>

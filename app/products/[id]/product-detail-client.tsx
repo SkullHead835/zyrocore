@@ -278,31 +278,32 @@ export default function ProductDetailClient({ product, related }: Props) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-1.5 text-sm text-muted-foreground mb-6" aria-label="Breadcrumb">
-        <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
-        <ChevronRight className="w-3.5 h-3.5" />
-        <Link href="/products" className="hover:text-foreground transition-colors">Products</Link>
-        {product.category_name && (
-          <>
-            <ChevronRight className="w-3.5 h-3.5" />
-            <Link
-              href={`/products?category=${product.category_slug}`}
-              className="hover:text-foreground transition-colors"
-            >
-              {product.category_name}
-            </Link>
-          </>
-        )}
-        <ChevronRight className="w-3.5 h-3.5" />
-        <span className="text-foreground truncate max-w-[200px]">{product.name}</span>
-      </nav>
+    <div className="bg-background min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-1.5 text-xs uppercase tracking-widest text-muted-foreground mb-12" aria-label="Breadcrumb">
+          <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+          <ChevronRight className="w-3 h-3" />
+          <Link href="/products" className="hover:text-foreground transition-colors">Shop</Link>
+          {product.category_name && (
+            <>
+              <ChevronRight className="w-3 h-3" />
+              <Link
+                href={`/products?category=${product.category_slug}`}
+                className="hover:text-foreground transition-colors"
+              >
+                {product.category_name}
+              </Link>
+            </>
+          )}
+          <ChevronRight className="w-3 h-3" />
+          <span className="text-foreground truncate max-w-[200px] font-medium">{product.name}</span>
+        </nav>
 
-      <div className="grid md:grid-cols-2 gap-10 lg:gap-16">
-        {/* Images */}
-        <div className="space-y-3">
-          <div className="relative aspect-square rounded-xl overflow-hidden bg-muted border border-border">
+        <div className="grid md:grid-cols-2 gap-12 lg:gap-20">
+          {/* Images */}
+          <div className="space-y-4">
+            <div className="relative aspect-square rounded-2xl overflow-hidden bg-muted/30 border border-border">
             {product.images?.[activeImage] ? (
               <Image
                 src={product.images[activeImage]}
@@ -324,16 +325,16 @@ export default function ProductDetailClient({ product, related }: Props) {
             )}
           </div>
           {product.images?.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto">
+            <div className="flex gap-3 overflow-x-auto pb-2">
               {product.images.map((img, i) => (
                 <button
                   key={i}
                   onClick={() => setActiveImage(i)}
-                  className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
-                    activeImage === i ? 'border-foreground' : 'border-border hover:border-foreground/40'
+                  className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                    activeImage === i ? 'border-accent shadow-lg' : 'border-border hover:border-accent/50'
                   }`}
                 >
-                  <Image src={img} alt={`View ${i + 1}`} width={64} height={64} className="object-cover w-full h-full" />
+                  <Image src={img} alt={`View ${i + 1}`} width={80} height={80} className="object-cover w-full h-full" />
                 </button>
               ))}
             </div>
@@ -341,16 +342,16 @@ export default function ProductDetailClient({ product, related }: Props) {
         </div>
 
         {/* Info */}
-        <div>
-          <div className="flex items-center justify-between gap-4 mb-1">
-            <p className="text-sm text-muted-foreground">{product.category_name}</p>
+        <div className="space-y-6">
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-xs uppercase tracking-widest text-accent font-semibold">{product.category_name || 'First Collection'}</p>
 
             {/* Share Button & Popup Menu */}
             <div className="relative">
               <button
                 onClick={() => setShareOpen(!shareOpen)}
                 suppressHydrationWarning
-                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-border hover:border-foreground transition-colors bg-background text-foreground"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg border border-border hover:border-accent transition-colors bg-background text-foreground"
               >
                 <Share2 className="w-3.5 h-3.5" />
                 Share
@@ -387,7 +388,7 @@ export default function ProductDetailClient({ product, related }: Props) {
             </div>
           </div>
 
-          <h1 className="text-2xl font-bold text-foreground text-pretty mb-3 leading-snug">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground text-pretty mb-6 leading-tight">
             {product.name}
           </h1>
 
