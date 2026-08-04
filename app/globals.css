@@ -148,6 +148,82 @@
   }
 }
 
+/* Page entrance animation */
+@keyframes pageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Smooth loading shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Button press effect */
+@keyframes buttonPress {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.98);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Fade in delayed */
+@keyframes fadeInDelay {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@layer base {
+  /* Smooth scroll behavior */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Global button and interactive transitions */
+  button, [role="button"], input[type="submit"], a[role="button"], input, textarea, select {
+    @apply transition-all duration-200 ease-out;
+  }
+
+  /* Page transitions */
+  main {
+    animation: pageSlideIn 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Input focus states with smooth transition */
+  input:focus, textarea:focus, select:focus {
+    @apply ring-1 ring-white/20 border-white/30;
+  }
+
+  /* Link hover states */
+  a {
+    @apply transition-colors duration-200;
+  }
+
+  a:not([role="button"]) {
+    @apply hover:opacity-70;
+  }
+}
+
 @layer utilities {
   .image-fade-in {
     animation: imageFadeInScale 700ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
@@ -156,4 +232,49 @@
   .image-fade-out {
     animation: imageFadeOutScale 700ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   }
+
+  .animate-page-in {
+    animation: pageSlideIn 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+    background: linear-gradient(90deg, rgb(255 255 255 / 0.1) 0%, rgb(255 255 255 / 0.2) 20%, rgb(255 255 255 / 0.1) 40%);
+    background-size: 1000px 100%;
+  }
+
+  .animate-button-press {
+    animation: buttonPress 200ms ease-out;
+  }
+
+  .transition-smooth {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-105;
+  }
+
+  .hover-lift {
+    @apply transition-all duration-200 hover:shadow-2xl hover:-translate-y-1;
+  }
+
+  /* Scroll reveal animations */
+  .scroll-reveal {
+    animation: pageSlideIn 600ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  /* Staggered children animations */
+  .stagger-children > * {
+    animation: fadeInDelay 500ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  .stagger-children > :nth-child(1) { animation-delay: 100ms; }
+  .stagger-children > :nth-child(2) { animation-delay: 200ms; }
+  .stagger-children > :nth-child(3) { animation-delay: 300ms; }
+  .stagger-children > :nth-child(4) { animation-delay: 400ms; }
+  .stagger-children > :nth-child(5) { animation-delay: 500ms; }
+  .stagger-children > :nth-child(6) { animation-delay: 600ms; }
+  .stagger-children > :nth-child(7) { animation-delay: 700ms; }
+  .stagger-children > :nth-child(8) { animation-delay: 800ms; }
 }
