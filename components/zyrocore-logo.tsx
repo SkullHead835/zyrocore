@@ -29,31 +29,29 @@ export default function ZyrocoreLogo({
 
   return (
     <div className={`flex items-center gap-2.5 select-none ${className}`}>
-      {/* High-DPI Vector SVG Emblem for crisp Retina rendering across all devices & themes */}
+      {/* Modern geometric logo - bold Z with circle */}
       <svg
-        viewBox="0 0 100 100"
-        fill="none"
+        viewBox="0 0 512 512"
+        fill="currentColor"
         xmlns="http://www.w3.org/2000/svg"
-        className={`${iconSizes[size]} flex-shrink-0 text-foreground transition-colors duration-200`}
+        className={`${iconSizes[size]} flex-shrink-0 transition-colors duration-200`}
         aria-hidden="true"
       >
-        {/* Geometric Oval Cut Ring */}
-        <circle cx="50" cy="50" r="42" stroke="currentColor" strokeWidth="12" />
-        {/* Bold Diagonal Cut line */}
-        <path
-          d="M22 22 L78 78"
-          stroke="currentColor"
-          strokeWidth="14"
-          strokeLinecap="round"
-        />
-        {/* Inner Z Accents */}
-        <path
-          d="M32 32 H68 L32 68 H68"
-          stroke="currentColor"
-          strokeWidth="8"
-          strokeLinecap="square"
-          strokeLinejoin="miter"
-        />
+        {/* Outer circle segments */}
+        <path d="M 100 120 A 150 150 0 0 1 180 70 L 210 50 A 180 180 0 0 0 80 100 Z" fill="currentColor" />
+        <path d="M 330 70 A 150 150 0 0 1 410 120 L 420 90 A 180 180 0 0 0 300 50 Z" fill="currentColor" />
+        <path d="M 410 390 A 150 150 0 0 1 330 440 L 300 460 A 180 180 0 0 0 440 420 Z" fill="currentColor" />
+        <path d="M 180 440 A 150 150 0 0 1 100 390 L 80 420 A 180 180 0 0 0 210 460 Z" fill="currentColor" />
+        
+        {/* Top horizontal bar */}
+        <rect x="120" y="140" width="270" height="60" fill="currentColor" />
+        
+        {/* Main diagonal slash */}
+        <polygon points="180,220 340,220 180,420 140,420" fill="currentColor" />
+        <polygon points="340,220 380,220 220,420 180,420" fill="currentColor" />
+        
+        {/* Bottom horizontal bar */}
+        <rect x="120" y="310" width="270" height="60" fill="currentColor" />
       </svg>
 
       {!iconOnly && (
