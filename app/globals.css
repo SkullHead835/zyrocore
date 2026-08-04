@@ -124,3 +124,36 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Premium image transition animations */
+@keyframes imageFadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes imageFadeOutScale {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@layer utilities {
+  .image-fade-in {
+    animation: imageFadeInScale 700ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  
+  .image-fade-out {
+    animation: imageFadeOutScale 700ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+}
