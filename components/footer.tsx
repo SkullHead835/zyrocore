@@ -46,7 +46,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm text-background/60">
               <li><span className="cursor-default">FAQ</span></li>
               <li><span className="cursor-default">Shipping Info</span></li>
-              <li><span className="cursor-default">Returns</span></li>
+              <li><span className="cursor-default text-background/40">Returns (Currently Unavailable)</span></li>
               <li><span className="cursor-default">Contact Us</span></li>
             </ul>
           </div>

@@ -2,6 +2,7 @@ import Header from '@/components/header'
 import Footer from '@/components/footer'
 import HeroSection from './home/hero-section'
 import FeaturedProducts from './home/featured-products'
+import NewArrivalsSection from './home/new-arrivals-section'
 import BestSellers from './home/best-sellers'
 import BannerStrip from './home/banner-strip'
 import EmptyStorefront from './home/empty-storefront'
@@ -28,6 +29,7 @@ export default async function HomePage() {
         <HeroSection />
         {hasProds ? (
           <>
+            <NewArrivalsSection />
             <FeaturedProducts />
             <BannerStrip />
             <BestSellers />

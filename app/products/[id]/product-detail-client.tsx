@@ -16,6 +16,7 @@ import { formatPrice, calculateDiscount } from '@/lib/utils-shop'
 import { useAuth } from '@/components/auth-provider'
 import { useCart } from '@/components/cart-provider'
 import { compressImageFile } from '@/lib/image-compress'
+import { SITE_CONFIG } from '@/lib/config'
 import { toast } from 'sonner'
 import type { Product } from '@/lib/types'
 
@@ -505,7 +506,7 @@ export default function ProductDetailClient({ product, related }: Props) {
           <div className="border-t border-border pt-5 space-y-2">
             {[
               { icon: Check, text: 'Free shipping on orders over ₹999' },
-              { icon: Check, text: '15-day hassle-free returns' },
+              { icon: Check, text: SITE_CONFIG.returnsEnabled ? '15-day hassle-free returns' : SITE_CONFIG.returnPolicyMessage },
               { icon: Check, text: 'Instant UPI Payment verification' },
             ].map(({ icon: Icon, text }) => (
               <div key={text} className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -558,7 +559,7 @@ export default function ProductDetailClient({ product, related }: Props) {
             <div className="text-sm text-foreground space-y-1.5">
               <p><span className="font-semibold text-muted-foreground">Country of Origin:</span> India</p>
               <p><span className="font-semibold text-muted-foreground">Dispatch:</span> Ships within 24-48 business hours</p>
-              <p><span className="font-semibold text-muted-foreground">Returns:</span> 15-day return / exchange policy</p>
+              <p><span className="font-semibold text-muted-foreground">Returns:</span> {SITE_CONFIG.returnsEnabled ? '15-day return policy' : SITE_CONFIG.returnPolicyMessage}</p>
               <p><span className="font-semibold text-muted-foreground">Authenticity:</span> 100% Genuine ZYRØCORE Guarantee</p>
             </div>
           </div>
