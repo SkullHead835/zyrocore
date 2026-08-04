@@ -10,7 +10,37 @@ export async function GET() {
     const [totalOrders] = await sql`SELECT COUNT(*) as count FROM orders`
     const [totalUsers] = await sql`SELECT COUNT(*) as count FROM users WHERE role = 'user'`
     const [totalProducts] = await sql`SELECT COUNT(*) as count FROM products`
-    const [lowStock] = await sql`SELECT COUNT(*) as count FROM products WHERE stock < 10`
+    
+    // Low stock threshold: stock <= 10 items
+    const [lowStock] = await sql`SELECT COUNT(*) as count FROM products WHERE stock <= 10`
+
+    // Products Sold (total quantity of items in valid orders)
+    const [productsSold] = await sql`
+      SELECT COALESCE(SUM(quantity), 0) as count
+      FROM order_items oi
+      JOIN orders o ON oi.order_id = o.id
+      WHERE o.status != 'cancelled'
+    `
+
+    // New Customers registered this month
+    const [newCustomers] = await sql`
+      SELECT COUNT(*) as count
+      FROM users
+      WHERE role = 'user' AND created_at >= DATE_TRUNC('month', NOW())
+    `
+
+    // Returning Customers (users with more than 1 completed order)
+    const [returningCustomers] = await sql`
+      SELECT COUNT(*) as count FROM (
+        SELECT user_id FROM orders WHERE user_id IS NOT NULL GROUP BY user_id HAVING COUNT(id) > 1
+      ) sub
+    `
+
+    // Active Users (logged in within past 30 days)
+    const [activeUsers] = await sql`
+      SELECT COUNT(*) as count FROM users
+      WHERE role = 'user' AND last_login_at >= NOW() - INTERVAL '30 days'
+    `
 
     const recentOrders = await sql`
       SELECT o.id, o.status, o.total, o.created_at, u.name as user_name
@@ -29,6 +59,10 @@ export async function GET() {
         users: parseInt(totalUsers.count),
         products: parseInt(totalProducts.count),
         lowStock: parseInt(lowStock.count),
+        productsSold: parseInt(productsSold.count),
+        newCustomers: parseInt(newCustomers.count),
+        returningCustomers: parseInt(returningCustomers.count),
+        activeUsers: parseInt(activeUsers.count),
       },
       recentOrders,
       ordersByStatus,
@@ -38,6 +72,7 @@ export async function GET() {
     if (msg === 'UNAUTHORIZED' || msg === 'FORBIDDEN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
+    console.error('[stats] error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

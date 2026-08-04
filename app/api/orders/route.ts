@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     const user = await getSession()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const { shipping, items, payment_method = 'COD' } = await req.json()
+    const { shipping, items } = await req.json()
 
     if (!shipping || !items || items.length === 0) {
       return NextResponse.json({ error: 'Missing order data' }, { status: 400 })
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
         shipping_city, shipping_district, shipping_state, shipping_pincode, shipping_zip, shipping_country
       ) VALUES (
         ${user.id}, 'pending', ${subtotal}, ${shippingCost}, ${total},
-        ${payment_method}, ${payment_method === 'COD' ? 'cod' : 'pending'},
+        'UPI', 'pending',
         ${shipping.name}, ${shipping.phone},
         ${shipping.address}, ${shipping.address2 || null}, ${shipping.landmark || null},
         ${shipping.city}, ${shipping.district || null}, ${shipping.state},

@@ -7,8 +7,8 @@ import { toast } from 'sonner'
 
 const STOCK_LEVEL = (stock: number) => {
   if (stock === 0) return { label: 'Out of Stock', cls: 'text-red-700 bg-red-50 border border-red-200' }
-  if (stock < 5)  return { label: 'Critical',     cls: 'text-red-700 bg-red-50 border border-red-200' }
-  if (stock < 10) return { label: 'Low Stock',    cls: 'text-amber-700 bg-amber-50 border border-amber-200' }
+  if (stock <= 5)  return { label: 'Critical',     cls: 'text-red-700 bg-red-50 border border-red-200' }
+  if (stock <= 10) return { label: 'Low Stock',    cls: 'text-amber-700 bg-amber-50 border border-amber-200' }
   return              { label: 'In Stock',         cls: 'text-green-700 bg-green-50 border border-green-200' }
 }
 
@@ -39,7 +39,7 @@ export default function InventoryPage() {
     setFiltered(products.filter(p => p.name.toLowerCase().includes(q)))
   }, [search, products])
 
-  const lowStockCount = products.filter(p => p.stock < 10).length
+  const lowStockCount = products.filter(p => p.stock <= 10).length
 
   const handleSaveStock = async (p: any) => {
     const newStock = parseInt(editStock[p.id] ?? p.stock)

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard, Package, PackagePlus, ShoppingBag,
-  Layers, BarChart2, LogOut, Bell, ChevronRight, Menu, X,
+  Layers, BarChart2, FileText, Users, LogOut, Bell, ChevronRight, Menu, X,
 } from 'lucide-react'
 import { useAdminAuth } from './admin-auth-provider'
 import { useState, useEffect } from 'react'
@@ -16,8 +16,10 @@ const NAV = [
   { href: '/secure-admin/products',   label: 'Products',    icon: Package,         exact: false },
   { href: '/secure-admin/products/new', label: 'Add Product', icon: PackagePlus,   exact: false },
   { href: '/secure-admin/orders',     label: 'Orders',      icon: ShoppingBag,     exact: false },
+  { href: '/secure-admin/customers',  label: 'Customers',   icon: Users,           exact: false },
   { href: '/secure-admin/inventory',  label: 'Inventory',   icon: Layers,          exact: false },
   { href: '/secure-admin/analytics',  label: 'Analytics',   icon: BarChart2,       exact: false },
+  { href: '/secure-admin/reports',    label: 'Reports',     icon: FileText,        exact: false },
 ]
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {

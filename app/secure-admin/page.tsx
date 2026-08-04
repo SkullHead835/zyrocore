@@ -5,8 +5,8 @@ import Link from 'next/link'
 import AdminShell from './admin-shell'
 import {
   IndianRupee, ShoppingBag, Package, AlertTriangle,
-  CalendarClock, ArrowUpRight, TrendingUp, PackagePlus,
-  ClipboardList, Layers, BarChart2,
+  ArrowUpRight, TrendingUp, PackagePlus,
+  ClipboardList, Layers, BarChart2, Users, UserCheck, Activity, FileText
 } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 
@@ -16,6 +16,10 @@ interface Stats {
   users: number
   products: number
   lowStock: number
+  productsSold: number
+  newCustomers: number
+  returningCustomers: number
+  activeUsers: number
 }
 
 interface RecentOrder {
@@ -47,11 +51,13 @@ const STATUS_COLOR: Record<string, string> = {
   cancelled: 'text-red-700 bg-red-50 border border-red-200',
 }
 
-const StatCard = ({ label, value, icon: Icon, sub, gold }: {
-  label: string; value: string; icon: React.ElementType; sub?: string; gold?: boolean
+const StatCard = ({ label, value, icon: Icon, sub, gold, danger }: {
+  label: string; value: string; icon: React.ElementType; sub?: string; gold?: boolean; danger?: boolean
 }) => (
   <div className="bg-white border border-neutral-200 rounded-xl p-5 flex items-start gap-4 shadow-sm">
-    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${gold ? 'bg-black text-white' : 'bg-neutral-100 text-neutral-600'}`}>
+    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+      gold ? 'bg-black text-white' : danger ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-neutral-100 text-neutral-700'
+    }`}>
       <Icon className="w-5 h-5" />
     </div>
     <div className="min-w-0">
@@ -95,8 +101,8 @@ export default function AdminDashboardPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-neutral-900 text-2xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-neutral-500 text-sm mt-0.5">Welcome back. Here is what is happening today.</p>
+            <h1 className="text-neutral-900 text-2xl font-bold tracking-tight">Dashboard Overview</h1>
+            <p className="text-neutral-500 text-sm mt-0.5">Real-time store metrics, order status, and inventory alerts</p>
           </div>
           <Link
             href="/secure-admin/products/new"
@@ -107,18 +113,26 @@ export default function AdminDashboardPage() {
           </Link>
         </div>
 
-        {/* Stat cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          <StatCard label="Total Revenue" value={loading ? '...' : formatINR(stats?.revenue ?? 0)} icon={IndianRupee} gold sub="All time" />
-          <StatCard label="Total Orders" value={loading ? '...' : String(stats?.orders ?? 0)} icon={ShoppingBag} sub="All time" />
-          <StatCard label="Products" value={loading ? '...' : String(stats?.products ?? 0)} icon={Package} sub="In catalogue" />
-          <StatCard label="Customers" value={loading ? '...' : String(stats?.users ?? 0)} icon={TrendingUp} sub="Registered" />
+        {/* Primary Stat Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard label="Total Revenue" value={loading ? '...' : formatINR(stats?.revenue ?? 0)} icon={IndianRupee} gold sub="Completed sales" />
+          <StatCard label="Total Orders" value={loading ? '...' : String(stats?.orders ?? 0)} icon={ShoppingBag} sub="All time orders" />
+          <StatCard label="Products Sold" value={loading ? '...' : String(stats?.productsSold ?? 0)} icon={Package} sub="Units purchased" />
           <StatCard
-            label="Low Stock"
+            label="Low Stock Warning"
             value={loading ? '...' : String(stats?.lowStock ?? 0)}
             icon={AlertTriangle}
-            sub={stats?.lowStock ? 'Products need restock' : 'All stocked up'}
+            danger={!!(stats?.lowStock && stats.lowStock > 0)}
+            sub={stats?.lowStock ? 'Items at 10 or fewer stock' : 'Stock levels healthy'}
           />
+        </div>
+
+        {/* Secondary Stat Cards (Customer Metrics) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard label="Total Registered Customers" value={loading ? '...' : String(stats?.users ?? 0)} icon={Users} sub="Total accounts" />
+          <StatCard label="New Customers (This Month)" value={loading ? '...' : String(stats?.newCustomers ?? 0)} icon={TrendingUp} sub="Recent signups" />
+          <StatCard label="Returning Customers" value={loading ? '...' : String(stats?.returningCustomers ?? 0)} icon={UserCheck} sub="> 1 order placed" />
+          <StatCard label="Active Users (30 Days)" value={loading ? '...' : String(stats?.activeUsers ?? 0)} icon={Activity} sub="Recent user logins" />
         </div>
 
         {/* Charts + Recent orders */}
@@ -179,13 +193,12 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Quick actions */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
             { href: '/secure-admin/products/new', label: 'Add New Product', icon: PackagePlus },
-            { href: '/secure-admin/products',     label: 'Manage Products',  icon: Package },
-            { href: '/secure-admin/orders',        label: 'View Orders',      icon: ClipboardList },
-            { href: '/secure-admin/inventory',     label: 'Check Inventory',  icon: Layers },
-            { href: '/secure-admin/analytics',     label: 'Analytics',        icon: BarChart2 },
+            { href: '/secure-admin/customers',     label: 'Customer Directory', icon: Users },
+            { href: '/secure-admin/reports',       label: 'Sales Reports',      icon: FileText },
+            { href: '/secure-admin/inventory',     label: 'Stock Inventory',   icon: Layers },
           ].map(({ href, label, icon: Icon }) => (
             <Link
               key={href}

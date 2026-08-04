@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AdminShell from '../admin-shell'
-import { ArrowLeft, Plus, X } from 'lucide-react'
+import { ArrowLeft, Plus, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 
@@ -24,22 +24,53 @@ export default function ProductForm({ productId }: ProductFormProps) {
     category_id: '', stock: '', images: [] as string[],
     sizes: [] as string[], is_featured: false, is_best_seller: false,
   })
-  const [imageInput, setImageInput] = useState('')
   const [sizeInput, setSizeInput] = useState('')
   const [uploadingImages, setUploadingImages] = useState(false)
   const [dragOver, setDragOver] = useState(false)
 
   const uploadFiles = async (files: FileList | File[]) => {
     const fileArr = Array.from(files)
-    const allowed = ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml']
-    const valid = fileArr.filter(f => allowed.includes(f.type) || f.name.match(/\.(png|jpg|jpeg|svg)$/i))
-    if (valid.length === 0) {
-      toast.error('Only PNG, JPG, JPEG, and SVG files are allowed')
+    
+    // Validate current image limit (max 5)
+    if (form.images.length >= 5) {
+      toast.error('Maximum limit of 5 images per product reached.')
       return
     }
+
+    const availableSlots = 5 - form.images.length
+    if (fileArr.length > availableSlots) {
+      toast.error(`You can only add ${availableSlots} more image(s). (Max 5 images per product)`)
+    }
+
+    const filesToUpload = fileArr.slice(0, availableSlots)
+    
+    // Allowed formats: JPG, JPEG, PNG, WEBP, AVIF, SVG
+    const allowedTypes = [
+      'image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/avif', 'image/svg+xml'
+    ]
+    const allowedExts = /\.(png|jpg|jpeg|webp|avif|svg)$/i
+
+    const validFiles: File[] = []
+
+    for (const f of filesToUpload) {
+      if (!allowedTypes.includes(f.type) && !f.name.match(allowedExts)) {
+        toast.error(`File "${f.name}" is not a supported image format (JPG, JPEG, PNG, WEBP, AVIF, SVG).`)
+        continue
+      }
+      if (f.size > 5 * 1024 * 1024) {
+        toast.error(`File "${f.name}" exceeds the 5MB size limit.`)
+        continue
+      }
+      validFiles.push(f)
+    }
+
+    if (validFiles.length === 0) return
+
     setUploadingImages(true)
     const token = localStorage.getItem('adminToken') || ''
-    for (const file of valid) {
+    const uploadedUrls: string[] = []
+
+    for (const file of validFiles) {
       try {
         const fd = new FormData()
         fd.append('file', file)
@@ -50,7 +81,7 @@ export default function ProductForm({ productId }: ProductFormProps) {
         })
         if (res.ok) {
           const data = await res.json()
-          set('images', [...form.images, data.url])
+          uploadedUrls.push(data.url)
           toast.success(`${file.name} uploaded`)
         } else {
           const err = await res.json()
@@ -60,9 +91,12 @@ export default function ProductForm({ productId }: ProductFormProps) {
         toast.error(`Error uploading ${file.name}`)
       }
     }
+
+    if (uploadedUrls.length > 0) {
+      set('images', [...form.images, ...uploadedUrls].slice(0, 5))
+    }
     setUploadingImages(false)
   }
-
 
   useEffect(() => {
     fetch('/api/categories').then(r => r.ok ? r.json() : null).then(data => {
@@ -86,7 +120,21 @@ export default function ProductForm({ productId }: ProductFormProps) {
 
   const set = (key: string, val: any) => setForm(f => ({ ...f, [key]: val }))
 
-  const removeImage = (url: string) => set('images', form.images.filter(i => i !== url))
+  const removeImage = (index: number) => {
+    const updated = [...form.images]
+    updated.splice(index, 1)
+    set('images', updated)
+  }
+
+  const moveImage = (index: number, direction: 'left' | 'right') => {
+    const targetIndex = direction === 'left' ? index - 1 : index + 1
+    if (targetIndex < 0 || targetIndex >= form.images.length) return
+    const updated = [...form.images]
+    const temp = updated[index]
+    updated[index] = updated[targetIndex]
+    updated[targetIndex] = temp
+    set('images', updated)
+  }
 
   const addSize = () => {
     const s = sizeInput.trim().toUpperCase()
@@ -187,75 +235,106 @@ export default function ProductForm({ productId }: ProductFormProps) {
           {/* Images */}
           <div className="bg-white border border-neutral-200 rounded-xl p-5 space-y-3 shadow-sm">
             <div className="flex items-center justify-between">
-              <h2 className="text-neutral-900 text-sm font-bold">Product Images</h2>
-              <span className="text-neutral-400 text-xs font-medium">PNG, JPG, JPEG, SVG</span>
+              <h2 className="text-neutral-900 text-sm font-bold">Product Images ({form.images.length}/5)</h2>
+              <span className="text-neutral-400 text-xs font-medium">JPG, JPEG, PNG, WEBP, AVIF (Max 5MB)</span>
             </div>
 
             {/* Drop zone */}
-            <div
-              onDragOver={e => { e.preventDefault(); setDragOver(true) }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={e => { e.preventDefault(); setDragOver(false); if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files) }}
-              className={`relative border-2 border-dashed rounded-xl transition-colors cursor-pointer ${
-                dragOver ? 'border-black bg-neutral-50' : 'border-neutral-200 hover:border-neutral-400'
-              }`}
-              onClick={() => !uploadingImages && document.getElementById('img-file-input')?.click()}
-            >
-              <input
-                id="img-file-input"
-                type="file"
-                accept=".png,.jpg,.jpeg,.svg,image/png,image/jpeg,image/svg+xml"
-                multiple
-                className="hidden"
-                onChange={e => { if (e.target.files?.length) { uploadFiles(e.target.files); e.target.value = '' } }}
-              />
-              <div className="flex flex-col items-center justify-center py-8 gap-2 select-none pointer-events-none">
-                {uploadingImages ? (
-                  <>
-                    <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                    <p className="text-neutral-400 text-sm font-medium">Uploading...</p>
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-8 h-8 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4-4a3 3 0 014.24 0L16 16m-2-2l1.59-1.59a3 3 0 014.24 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <p className="text-neutral-500 text-sm">
-                      <span className="text-black font-semibold underline">Click to upload</span> or drag & drop
-                    </p>
-                    <p className="text-neutral-400 text-xs">PNG, JPG, JPEG, SVG supported • Multiple files allowed</p>
-                  </>
-                )}
+            {form.images.length < 5 && (
+              <div
+                onDragOver={e => { e.preventDefault(); setDragOver(true) }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={e => { e.preventDefault(); setDragOver(false); if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files) }}
+                className={`relative border-2 border-dashed rounded-xl transition-colors cursor-pointer ${
+                  dragOver ? 'border-black bg-neutral-50' : 'border-neutral-200 hover:border-neutral-400'
+                }`}
+                onClick={() => !uploadingImages && document.getElementById('img-file-input')?.click()}
+              >
+                <input
+                  id="img-file-input"
+                  type="file"
+                  accept=".png,.jpg,.jpeg,.webp,.avif,.svg,image/png,image/jpeg,image/webp,image/avif,image/svg+xml"
+                  multiple
+                  className="hidden"
+                  onChange={e => { if (e.target.files?.length) { uploadFiles(e.target.files); e.target.value = '' } }}
+                />
+                <div className="flex flex-col items-center justify-center py-8 gap-2 select-none pointer-events-none">
+                  {uploadingImages ? (
+                    <>
+                      <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                      <p className="text-neutral-400 text-sm font-medium">Uploading image(s)...</p>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-8 h-8 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4-4a3 3 0 014.24 0L16 16m-2-2l1.59-1.59a3 3 0 014.24 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <p className="text-neutral-500 text-sm">
+                        <span className="text-black font-semibold underline">Click to upload</span> or drag & drop
+                      </p>
+                      <p className="text-neutral-400 text-xs">JPG, JPEG, PNG, WEBP, AVIF supported • Max 5 images</p>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Image previews */}
+            {/* Image previews with reorder and delete controls */}
             {form.images.length > 0 && (
-              <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 mt-1">
-                {form.images.map((url, idx) => (
-                  <div key={url} className="relative group aspect-square">
-                    <img
-                      src={url}
-                      alt={`Product image ${idx + 1}`}
-                      className="w-full h-full object-cover rounded-lg border border-neutral-200 bg-neutral-50"
-                    />
-                    {idx === 0 && (
-                      <span className="absolute bottom-0 left-0 right-0 bg-black text-white text-[9px] font-bold text-center py-0.5 rounded-b-lg">MAIN</span>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => removeImage(url)}
-                      suppressHydrationWarning
-                      className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 hover:bg-red-400 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                    >
-                      <X className="w-3 h-3 text-white" />
-                    </button>
-                  </div>
-                ))}
+              <div className="space-y-2 mt-3">
+                <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Image Preview & Ordering</p>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                  {form.images.map((url, idx) => (
+                    <div key={url + idx} className="relative group aspect-square rounded-lg border border-neutral-200 bg-neutral-50 overflow-hidden shadow-sm flex flex-col">
+                      <img
+                        src={url}
+                        alt={`Product preview ${idx + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                      {idx === 0 && (
+                        <span className="absolute top-1 left-1 bg-black text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded shadow">MAIN</span>
+                      )}
+
+                      {/* Reorder and Delete Controls overlay */}
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
+                        {idx > 0 && (
+                          <button
+                            type="button"
+                            title="Move left"
+                            onClick={() => moveImage(idx, 'left')}
+                            suppressHydrationWarning
+                            className="w-7 h-7 bg-white/90 hover:bg-white text-black rounded-full flex items-center justify-center shadow transition-colors"
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                          </button>
+                        )}
+                        {idx < form.images.length - 1 && (
+                          <button
+                            type="button"
+                            title="Move right"
+                            onClick={() => moveImage(idx, 'right')}
+                            suppressHydrationWarning
+                            className="w-7 h-7 bg-white/90 hover:bg-white text-black rounded-full flex items-center justify-center shadow transition-colors"
+                          >
+                            <ChevronRight className="w-4 h-4" />
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          title="Remove image"
+                          onClick={() => removeImage(idx)}
+                          suppressHydrationWarning
+                          className="w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-full flex items-center justify-center shadow transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
-
 
           {/* Sizes */}
           <div className="bg-white border border-neutral-200 rounded-xl p-5 space-y-3 shadow-sm">

@@ -72,7 +72,7 @@ export default function CheckoutPage() {
     pincode: '',
     country: 'India',
   })
-  const [paymentMethod, setPaymentMethod] = useState<'UPI' | 'COD'>('UPI')
+  const paymentMethod = 'UPI'
   const [orderId, setOrderId] = useState<number | null>(null)
   const [screenshotUrl, setScreenshotUrl] = useState('')
   const [uploadingScreenshot, setUploadingScreenshot] = useState(false)
@@ -368,51 +368,21 @@ export default function CheckoutPage() {
                 {/* Payment method */}
                 <div className="bg-card border border-border rounded-xl p-6">
                   <h2 className="font-semibold text-lg mb-4">Payment Method</h2>
-                  <div className="grid sm:grid-cols-2 gap-3">
+                  <div className="grid sm:grid-cols-1 gap-3">
                     {/* UPI option */}
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod('UPI')}
-                      suppressHydrationWarning
-                      className={`flex items-center gap-3 p-4 rounded-xl border-2 text-left transition-colors ${
-                        paymentMethod === 'UPI'
-                          ? 'border-foreground bg-foreground/5'
-                          : 'border-border hover:border-foreground/40'
-                      }`}
-                    >
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${paymentMethod === 'UPI' ? 'bg-foreground text-background' : 'bg-muted'}`}>
+                    <div className="flex items-center gap-3 p-4 rounded-xl border-2 border-foreground bg-foreground/5 text-left">
+                      <div className="w-10 h-10 rounded-full bg-foreground text-background flex items-center justify-center flex-shrink-0">
                         <Smartphone className="w-5 h-5" />
                       </div>
                       <div>
-                        <p className="font-semibold text-sm">UPI Payment</p>
-                        <p className="text-xs text-muted-foreground">Pay via QR / UPI ID</p>
+                        <p className="font-semibold text-sm">UPI Payment (Instant QR / VPA)</p>
+                        <p className="text-xs text-muted-foreground">Scan QR code or pay via UPI ID and upload payment screenshot</p>
                       </div>
-                      {paymentMethod === 'UPI' && <CheckCircle2 className="w-4 h-4 ml-auto text-foreground flex-shrink-0" />}
-                    </button>
-
-                    {/* COD option */}
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod('COD')}
-                      suppressHydrationWarning
-                      className={`flex items-center gap-3 p-4 rounded-xl border-2 text-left transition-colors ${
-                        paymentMethod === 'COD'
-                          ? 'border-foreground bg-foreground/5'
-                          : 'border-border hover:border-foreground/40'
-                      }`}
-                    >
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${paymentMethod === 'COD' ? 'bg-foreground text-background' : 'bg-muted'}`}>
-                        <Truck className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-sm">Cash on Delivery</p>
-                        <p className="text-xs text-muted-foreground">Pay when you receive</p>
-                      </div>
-                      {paymentMethod === 'COD' && <CheckCircle2 className="w-4 h-4 ml-auto text-foreground flex-shrink-0" />}
-                    </button>
+                      <CheckCircle2 className="w-5 h-5 ml-auto text-foreground flex-shrink-0" />
+                    </div>
                   </div>
 
-                  {paymentMethod === 'UPI' && paymentSettings && (
+                  {paymentSettings && (
                     <div className="mt-4 p-3 bg-muted/40 rounded-lg flex items-center gap-3">
                       <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-border bg-white flex-shrink-0">
                         <Image src={paymentSettings.qr_image_url} alt="QR" fill className="object-contain p-0.5" sizes="40px" />
@@ -423,7 +393,7 @@ export default function CheckoutPage() {
                       </div>
                     </div>
                   )}
-                  {paymentMethod === 'UPI' && !paymentSettings && (
+                  {!paymentSettings && (
                     <p className="mt-3 text-xs text-muted-foreground">UPI payment details will be shown after placing the order.</p>
                   )}
                 </div>
