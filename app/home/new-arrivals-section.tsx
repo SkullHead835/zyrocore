@@ -44,18 +44,18 @@ export default function NewArrivalsSection() {
   if (products.length === 0) return null
 
   return (
-    <section className="max-w-7xl mx-auto px-4 py-16 border-t border-border">
+    <section className="max-w-7xl mx-auto px-4 py-20 border-t border-border">
       {/* Section Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
         <div>
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
-            <Sparkles className="w-4 h-4 text-foreground animate-pulse" /> Just Arrived
+          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-accent mb-3">
+            <Sparkles className="w-4 h-4" /> New Arrivals
           </div>
-          <h2 className="text-3xl font-extrabold text-foreground tracking-tight">
-            New Arrivals & Latest Drops
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight">
+            Latest Drops
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Discover our newest, performance-engineered styles fresh off the line.
+          <p className="text-sm text-muted-foreground mt-2">
+            Discover our newest collections. Built for ambitious.
           </p>
         </div>
 

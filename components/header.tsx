@@ -48,13 +48,13 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-background border-b border-border shadow-sm">
+    <header className="sticky top-0 z-50 bg-background border-b border-border">
       {/* Top bar */}
-      <div className="bg-foreground text-background py-1.5 text-center text-xs font-medium tracking-wide">
+      <div className="bg-accent text-accent-foreground py-2 text-center text-xs font-medium tracking-widest uppercase">
         Free shipping on orders over ₹999</div>
 
       {/* Main header */}
-      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center gap-4">
+      <div className="max-w-7xl mx-auto px-4 h-20 flex items-center gap-6">
         {/* Logo */}
         <Link href="/" className="flex-shrink-0 flex items-center">
           <ZyrocoreLogo size="md" />
@@ -155,13 +155,13 @@ export default function Header() {
       </div>
 
       {/* Category nav */}
-      <div className="hidden md:block border-t border-border bg-background">
+      <div className="hidden md:block border-t border-border bg-background/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4">
-          <nav className="flex items-center gap-6 h-10 text-sm" aria-label="Categories">
-            <Link href="/products" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
-              All
+          <nav className="flex items-center gap-8 h-12 text-xs uppercase tracking-widest" aria-label="Categories">
+            <Link href="/products" className="text-foreground hover:text-accent transition-colors font-semibold">
+              Shop
             </Link>
-            {categories.map(cat => (
+            {categories.slice(0, 4).map(cat => (
               <Link
                 key={cat.slug}
                 href={`/products?category=${cat.slug}`}
@@ -170,7 +170,7 @@ export default function Header() {
                 {cat.label}
               </Link>
             ))}
-            <Link href="/products?best_seller=true" className="text-muted-foreground hover:text-foreground transition-colors ml-auto font-medium">
+            <Link href="/products?best_seller=true" className="text-muted-foreground hover:text-foreground transition-colors ml-auto">
               Best Sellers
             </Link>
           </nav>

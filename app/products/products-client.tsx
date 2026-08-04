@@ -65,13 +65,13 @@ export default function ProductsClient() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-16">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12">
         <div>
-          <h1 className="text-2xl font-bold text-foreground text-balance">{getTitle()}</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground text-balance">{getTitle()}</h1>
           {data && (
-            <p className="text-sm text-muted-foreground mt-0.5">{data.total} products found</p>
+            <p className="text-sm text-muted-foreground mt-2">{data.total} items</p>
           )}
         </div>
 
