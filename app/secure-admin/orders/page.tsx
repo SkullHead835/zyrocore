@@ -50,7 +50,14 @@ export default function AdminOrdersPage() {
     }).finally(() => setLoading(false))
   }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => {
+    load()
+    // Real-time polling every 5 seconds for live order notifications
+    const interval = setInterval(() => {
+      load()
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [statusFilter])
 
   const filtered = orders.filter(o => {
     if (!search) return true

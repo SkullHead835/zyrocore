@@ -7,7 +7,6 @@ export async function ensureDbSchema() {
 
   const dbUrl = process.env.DATABASE_URL || ''
   if (!dbUrl || dbUrl.includes('placeholder')) {
-    // Unconfigured or placeholder database environment
     return
   }
 
@@ -45,6 +44,17 @@ export async function ensureDbSchema() {
         UNIQUE(user_id, product_id)
       )
     `
+
+    // 4. Create performance indexes for O(log N) query speeds
+    await sql`CREATE INDEX IF NOT EXISTS idx_products_category_id ON products(category_id)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_products_created_at ON products(created_at DESC)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_reviews_product_id ON reviews(product_id)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_reviews_user_id ON reviews(user_id)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_cart_items_user_id ON cart_items(user_id)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_wishlist_user_id ON wishlist_items(user_id)`
 
     initialized = true
   } catch (err) {
