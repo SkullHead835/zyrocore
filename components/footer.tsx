@@ -13,7 +13,7 @@ export default function Footer() {
               </div>
             </Link>
             <p className="text-sm text-background/60 leading-relaxed mt-2">
-              Build for Ambitious. Your destination for premium apparel and accessories.
+              Built for Ambitious. Your destination for premium apparel and accessories.
             </p>
           </div>
 
@@ -53,7 +53,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-background/10 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-background/40">
-          <p>&copy; {new Date().getFullYear()} ZYRØCORE. Build for Ambitious. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} ZYRØCORE. Built for Ambitious. All rights reserved.</p>
           <div className="flex gap-4">
             <span>Privacy Policy</span>
             <span>Terms of Service</span>

@@ -62,7 +62,7 @@ export default function HeroSection() {
       <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-32 flex items-center">
         <div className="max-w-xl">
           <p className={`text-sm font-semibold uppercase tracking-widest mb-3 ${slide.text} opacity-60`}>
-            ZYRØCORE — Build for Ambitious
+            ZYRØCORE — Built for Ambitious
           </p>
           <h1 className={`text-4xl md:text-6xl font-bold mb-4 text-balance leading-tight ${slide.text}`}>
             {slide.title}

@@ -9,8 +9,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'ZYRØCORE — Build for Ambitious',
-  description: 'Build for Ambitious. Discover premium clothing, activewear, and accessories at ZYRØCORE.',
+  title: 'ZYRØCORE — Built for Ambitious',
+  description: 'Built for Ambitious. Discover premium clothing, activewear, and accessories at ZYRØCORE.',
 }
 
 export const viewport: Viewport = {

@@ -37,7 +37,7 @@ export default function ZyrocoreLogo({ className = '', showTagline = false, icon
           </span>
           {showTagline && (
             <span className="text-[10px] tracking-[0.25em] font-semibold text-muted-foreground uppercase mt-1">
-              Build for Ambitious
+              Built for Ambitious
             </span>
           )}
         </div>
