@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { use } from 'react'
 import { useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
-import { CheckCircle, Package } from 'lucide-react'
+import { CheckCircle, Package, Star } from 'lucide-react'
 import Header from '@/components/header'
 import Footer from '@/components/footer'
 import { Button } from '@/components/ui/button'
@@ -86,23 +86,36 @@ function OrderDetailContent({ id }: { id: string }) {
 
       {/* Items */}
       <div className="bg-card border border-border rounded-xl overflow-hidden mb-6">
-        <div className="p-4 border-b border-border">
+        <div className="p-4 border-b border-border flex items-center justify-between">
           <h2 className="font-semibold">Items Ordered</h2>
+          <span className="text-xs text-muted-foreground">Rate your purchased items below</span>
         </div>
         <div className="divide-y divide-border">
-          {order.items?.map((item: { id: number; product_image: string; product_name: string; size: string; quantity: number; price: number }) => (
-            <div key={item.id} className="flex gap-3 p-4">
-              {item.product_image && (
-                <div className="relative w-14 h-14 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
-                  <Image src={item.product_image} alt={item.product_name} fill className="object-cover" sizes="56px" />
+          {order.items?.map((item: { id: number; product_id?: number; product_image: string; product_name: string; size: string; quantity: number; price: number }) => (
+            <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4">
+              <div className="flex gap-3 items-center min-w-0">
+                {item.product_image && (
+                  <div className="relative w-14 h-14 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
+                    <Image src={item.product_image} alt={item.product_name} fill className="object-cover" sizes="56px" />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="font-medium text-sm truncate">{item.product_name}</p>
+                  {item.size && <p className="text-xs text-muted-foreground">Size: {item.size}</p>}
+                  <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
                 </div>
-              )}
-              <div className="flex-1">
-                <p className="font-medium text-sm">{item.product_name}</p>
-                {item.size && <p className="text-xs text-muted-foreground">Size: {item.size}</p>}
-                <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
               </div>
-              <p className="font-semibold text-sm">{formatPrice(item.price * item.quantity)}</p>
+
+              <div className="flex items-center justify-between sm:justify-end gap-4 border-t sm:border-t-0 pt-2 sm:pt-0">
+                <p className="font-semibold text-sm">{formatPrice(item.price * item.quantity)}</p>
+                {item.product_id && (
+                  <Button asChild size="sm" variant="outline" className="text-xs font-semibold flex items-center gap-1">
+                    <Link href={`/products/${item.product_id}#reviews`}>
+                      <Star className="w-3.5 h-3.5 fill-foreground text-foreground" /> Rate Item
+                    </Link>
+                  </Button>
+                )}
+              </div>
             </div>
           ))}
         </div>

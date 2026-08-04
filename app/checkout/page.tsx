@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import useSWR from 'swr'
-import { ChevronRight, Smartphone, Truck, Upload, CheckCircle2, Copy } from 'lucide-react'
+import { ChevronRight, Smartphone, Truck, Upload, CheckCircle2, Copy, MapPin, Loader2 } from 'lucide-react'
 import Header from '@/components/header'
 import Footer from '@/components/footer'
 import { Button } from '@/components/ui/button'
@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge'
 import { formatPrice } from '@/lib/utils-shop'
 import { useAuth } from '@/components/auth-provider'
+import { getCurrentLocationAddress } from '@/lib/google-maps'
 import { toast } from 'sonner'
 
 const INDIAN_STATES = [
@@ -82,6 +83,32 @@ export default function CheckoutPage() {
   const subtotal = items.reduce((sum, item) => sum + (item.discount_price ?? item.price) * item.quantity, 0)
   const shipping = subtotal >= 999 ? 0 : 99
   const total = subtotal + shipping
+
+  const [locating, setLocating] = useState(false)
+
+  const handleUseLocation = async () => {
+    setLocating(true)
+    const toastId = toast.loading('Detecting your GPS location...')
+    try {
+      const geo = await getCurrentLocationAddress()
+      setForm(f => ({
+        ...f,
+        address: geo.address || f.address,
+        address2: geo.address2 || f.address2,
+        landmark: geo.locality || f.landmark,
+        city: geo.city || f.city,
+        district: geo.district || f.district,
+        state: geo.state || f.state,
+        pincode: geo.pincode || f.pincode,
+        country: 'India',
+      }))
+      toast.success('Address auto-filled from your location!', { id: toastId })
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to detect location', { id: toastId })
+    } finally {
+      setLocating(false)
+    }
+  }
 
   const handleChange = (field: string, value: string) => setForm(f => ({ ...f, [field]: value }))
 
@@ -310,7 +337,21 @@ export default function CheckoutPage() {
               <div className="lg:col-span-2 space-y-6">
                 {/* Shipping address */}
                 <div className="bg-card border border-border rounded-xl p-6">
-                  <h2 className="font-semibold text-lg mb-5">Delivery Address</h2>
+                  <div className="flex items-center justify-between gap-2 mb-5">
+                    <h2 className="font-semibold text-lg">Delivery Address</h2>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleUseLocation}
+                      disabled={locating}
+                      suppressHydrationWarning
+                      className="text-xs flex items-center gap-1.5 border-foreground/30 hover:border-foreground"
+                    >
+                      {locating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <MapPin className="w-3.5 h-3.5 text-red-500" />}
+                      {locating ? 'Locating...' : 'Use My Current Location'}
+                    </Button>
+                  </div>
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="sm:col-span-2 space-y-1.5">
                       <Label htmlFor="name">Full Name *</Label>

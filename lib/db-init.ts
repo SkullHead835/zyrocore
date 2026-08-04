@@ -22,6 +22,23 @@ export async function ensureDbSchema() {
       )
     `
 
+    // 3. Create reviews table
+    await sql`
+      CREATE TABLE IF NOT EXISTS reviews (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+        rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+        title VARCHAR(255),
+        comment TEXT,
+        images TEXT[] DEFAULT '{}',
+        is_verified BOOLEAN DEFAULT false,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW(),
+        UNIQUE(user_id, product_id)
+      )
+    `
+
     initialized = true
   } catch (err) {
     console.error('[db-init] Schema initialization failed:', err)

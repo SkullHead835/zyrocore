@@ -9,8 +9,9 @@ export async function POST(req: NextRequest) {
   let admin
   try {
     admin = await requireAdmin()
-  } catch {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  } catch (err) {
+    console.error('[upload auth error]:', err)
+    return NextResponse.json({ error: 'Unauthorized admin session' }, { status: 401 })
   }
 
   try {
@@ -21,13 +22,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
-    // Validate size (max 50MB)
+    // 50MB size check
     const MAX_SIZE = 50 * 1024 * 1024
     if (file.size > MAX_SIZE) {
       return NextResponse.json({ error: 'File size exceeds 50MB limit' }, { status: 400 })
     }
 
-    // Validate mime type & extensions (JPG, JPEG, PNG, WEBP, AVIF, SVG)
+    // Extension & mime-type validation (case-insensitive)
+    const ext = file.name.split('.').pop()?.toLowerCase() || ''
+    const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'avif', 'svg']
     const allowedMimeTypes = [
       'image/jpeg',
       'image/jpg',
@@ -37,17 +40,15 @@ export async function POST(req: NextRequest) {
       'image/svg+xml',
     ]
 
-    const ext = file.name.split('.').pop()?.toLowerCase() || ''
-    const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'avif', 'svg']
-
-    if (!allowedMimeTypes.includes(file.type) && !allowedExtensions.includes(ext)) {
+    if (!allowedExtensions.includes(ext) && !allowedMimeTypes.includes(file.type.toLowerCase())) {
       return NextResponse.json(
-        { error: 'Only JPG, JPEG, PNG, WEBP, AVIF and SVG image formats are allowed' },
+        { error: `File format .${ext} is not supported. Please upload JPG, JPEG, PNG, WEBP, AVIF, or SVG.` },
         { status: 400 }
       )
     }
 
-    const filename = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+    const sanitizedExt = ext || 'jpg'
+    const filename = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.${sanitizedExt}`
 
     let fileUrl = ''
 
@@ -57,39 +58,40 @@ export async function POST(req: NextRequest) {
         const blob = await put(filename, file, { access: 'public' })
         fileUrl = blob.url
       } else {
-        throw new Error('BLOB_READ_WRITE_TOKEN is missing')
+        throw new Error('BLOB_READ_WRITE_TOKEN token missing')
       }
     } catch (blobErr) {
-      console.warn('[upload] Vercel blob token missing or failed. Using local storage fallback:', blobErr)
-      // Fallback: save to public/uploads directory or construct Data URI
+      console.warn('[upload] Blob token missing or failed. Using local storage fallback:', blobErr)
+      // Fallback: save to public/uploads directory or base64
       try {
         const bytes = await file.arrayBuffer()
         const buffer = Buffer.from(bytes)
-        
+
         const uploadsDir = path.join(process.cwd(), 'public', 'uploads')
         if (!fs.existsSync(uploadsDir)) {
           fs.mkdirSync(uploadsDir, { recursive: true })
         }
-        
-        const localFileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+
+        const localFileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${sanitizedExt}`
         const filePath = path.join(uploadsDir, localFileName)
         fs.writeFileSync(filePath, buffer)
-        
+
         fileUrl = `/uploads/${localFileName}`
       } catch (localErr) {
-        console.warn('[upload] Local disk write failed. Converting file to base64 Data URI:', localErr)
+        console.warn('[upload] Disk write failed. Using base64 Data URI:', localErr)
         const bytes = await file.arrayBuffer()
         const base64 = Buffer.from(bytes).toString('base64')
-        const mime = file.type || `image/${ext}`
+        const mime = file.type || `image/${sanitizedExt}`
         fileUrl = `data:${mime};base64,${base64}`
       }
     }
 
-    await logAdminAction(admin.id, 'image_upload', `Uploaded file: ${file.name} -> ${fileUrl}`)
+    await logAdminAction(admin.id, 'image_upload', `Uploaded file: ${file.name} (${(file.size / 1024).toFixed(1)} KB) -> ${fileUrl}`)
 
     return NextResponse.json({ url: fileUrl })
   } catch (error) {
-    console.error('[upload] error:', error)
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
+    console.error('[upload] Unexpected server error:', error)
+    const message = error instanceof Error ? error.message : 'Upload failed'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

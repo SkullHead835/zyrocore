@@ -7,6 +7,8 @@ import { ArrowLeft, Plus, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 
+import { compressImageFile } from '@/lib/image-compress'
+
 interface ProductFormProps {
   productId?: number
 }
@@ -44,7 +46,7 @@ export default function ProductForm({ productId }: ProductFormProps) {
 
     const filesToUpload = fileArr.slice(0, availableSlots)
     
-    // Allowed formats: JPG, JPEG, PNG, WEBP, AVIF, SVG
+    // Allowed formats: JPG, JPEG, PNG, WEBP, AVIF, SVG (case-insensitive)
     const allowedTypes = [
       'image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/avif', 'image/svg+xml'
     ]
@@ -53,7 +55,7 @@ export default function ProductForm({ productId }: ProductFormProps) {
     const validFiles: File[] = []
 
     for (const f of filesToUpload) {
-      if (!allowedTypes.includes(f.type) && !f.name.match(allowedExts)) {
+      if (!allowedTypes.includes(f.type.toLowerCase()) && !f.name.match(allowedExts)) {
         toast.error(`File "${f.name}" is not a supported image format (JPG, JPEG, PNG, WEBP, AVIF, SVG).`)
         continue
       }
@@ -67,28 +69,40 @@ export default function ProductForm({ productId }: ProductFormProps) {
     if (validFiles.length === 0) return
 
     setUploadingImages(true)
-    const token = localStorage.getItem('adminToken') || ''
+    const token = localStorage.getItem('adminToken') || localStorage.getItem('userToken') || ''
     const uploadedUrls: string[] = []
 
-    for (const file of validFiles) {
+    for (const rawFile of validFiles) {
+      const toastId = toast.loading(`Optimizing ${rawFile.name}...`)
       try {
+        // Compress high-res camera photos (e.g. IMG_8017.JPG) before upload
+        const fileToUpload = await compressImageFile(rawFile, 2000, 0.85)
+
+        toast.loading(`Uploading ${rawFile.name}...`, { id: toastId })
         const fd = new FormData()
-        fd.append('file', file)
+        fd.append('file', fileToUpload)
+
+        const headers: Record<string, string> = {}
+        if (token) headers['Authorization'] = `Bearer ${token}`
+
         const res = await fetch('/api/admin/upload', {
           method: 'POST',
-          headers: { Authorization: `Bearer ${token}` },
+          headers,
+          credentials: 'same-origin',
           body: fd,
         })
+
         if (res.ok) {
           const data = await res.json()
           uploadedUrls.push(data.url)
-          toast.success(`${file.name} uploaded`)
+          toast.success(`${rawFile.name} uploaded successfully!`, { id: toastId })
         } else {
           const err = await res.json()
-          toast.error(err.error || `Failed to upload ${file.name}`)
+          toast.error(err.error || `Failed to upload ${rawFile.name}`, { id: toastId })
         }
-      } catch {
-        toast.error(`Error uploading ${file.name}`)
+      } catch (err) {
+        console.error('Upload exception:', err)
+        toast.error(`Error uploading ${rawFile.name}`, { id: toastId })
       }
     }
 

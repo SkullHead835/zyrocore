@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   Heart, ShoppingCart, Star, ChevronRight, Minus, Plus, Check,
-  Share2, Copy, Send, MessageCircle, Facebook, Twitter, Mail, Info, ShieldCheck, RefreshCw, Truck
+  Share2, Copy, Send, MessageCircle, Facebook, Twitter, Mail, Info, ShieldCheck, RefreshCw, Truck,
+  MessageSquare, ThumbsUp, Shield, Upload, Trash2, Edit3, Camera
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -14,12 +15,25 @@ import ProductCard from '@/components/product-card'
 import { formatPrice, calculateDiscount } from '@/lib/utils-shop'
 import { useAuth } from '@/components/auth-provider'
 import { useCart } from '@/components/cart-provider'
+import { compressImageFile } from '@/lib/image-compress'
 import { toast } from 'sonner'
 import type { Product } from '@/lib/types'
 
 interface Props {
   product: Product
   related: Product[]
+}
+
+interface Review {
+  id: number
+  user_id: number
+  user_name: string
+  rating: number
+  title?: string
+  comment?: string
+  images?: string[]
+  is_verified: boolean
+  created_at: string
 }
 
 export default function ProductDetailClient({ product, related }: Props) {
@@ -34,10 +48,58 @@ export default function ProductDetailClient({ product, related }: Props) {
   const [wishlisted, setWishlisted] = useState(false)
   const [shareOpen, setShareOpen] = useState(false)
 
+  // Review states
+  const [reviewsData, setReviewsData] = useState<{
+    reviews: Review[]
+    totalReviews: number
+    averageRating: number
+    breakdown: Record<number, number>
+    userReview: Review | null
+  }>({
+    reviews: [],
+    totalReviews: product.rating_count || 0,
+    averageRating: product.rating || 0,
+    breakdown: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
+    userReview: null,
+  })
+  const [loadingReviews, setLoadingReviews] = useState(true)
+
+  // Write/Edit review form state
+  const [reviewRating, setReviewRating] = useState(5)
+  const [reviewTitle, setReviewTitle] = useState('')
+  const [reviewComment, setReviewComment] = useState('')
+  const [reviewImages, setReviewImages] = useState<string[]>([])
+  const [submittingReview, setSubmittingReview] = useState(false)
+  const [uploadingReviewImg, setUploadingReviewImg] = useState(false)
+
   const effectivePrice = product.discount_price ?? product.price
   const discount = product.discount_price ? calculateDiscount(product.price, product.discount_price) : 0
 
   const productUrl = typeof window !== 'undefined' ? window.location.href : ''
+
+  const loadReviews = async () => {
+    try {
+      const res = await fetch(`/api/reviews?product_id=${product.id}`)
+      if (res.ok) {
+        const data = await res.json()
+        setReviewsData(data)
+        if (data.userReview) {
+          setReviewRating(data.userReview.rating)
+          setReviewTitle(data.userReview.title || '')
+          setReviewComment(data.userReview.comment || '')
+          setReviewImages(data.userReview.images || [])
+        }
+      }
+    } catch {
+      // quiet catch
+    } finally {
+      setLoadingReviews(false)
+    }
+  }
+
+  useEffect(() => {
+    loadReviews()
+  }, [product.id])
 
   const handleAddToCart = async (redirect: boolean = false) => {
     if (!user) { router.push('/login'); return }
@@ -122,6 +184,96 @@ export default function ProductDetailClient({ product, related }: Props) {
     navigator.clipboard.writeText(productUrl)
     toast.success('Link copied! Open Instagram to paste and share.')
     setShareOpen(false)
+  }
+
+  // Review image upload handler with client-side compression
+  const handleReviewImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.length) return
+    const files = Array.from(e.target.files)
+    setUploadingReviewImg(true)
+
+    const token = localStorage.getItem('userToken') || localStorage.getItem('adminToken') || ''
+    const uploaded: string[] = []
+
+    for (const rawFile of files) {
+      try {
+        const compressed = await compressImageFile(rawFile, 1600, 0.85)
+        const fd = new FormData()
+        fd.append('file', compressed)
+
+        const res = await fetch('/api/admin/upload', {
+          method: 'POST',
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          body: fd,
+        })
+        if (res.ok) {
+          const json = await res.json()
+          uploaded.push(json.url)
+        }
+      } catch {
+        toast.error(`Failed to upload ${rawFile.name}`)
+      }
+    }
+
+    setReviewImages(prev => [...prev, ...uploaded].slice(0, 3))
+    setUploadingReviewImg(false)
+  }
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!user) { router.push('/login'); return }
+    setSubmittingReview(true)
+
+    try {
+      const token = localStorage.getItem('userToken') || localStorage.getItem('adminToken') || ''
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          product_id: product.id,
+          rating: reviewRating,
+          title: reviewTitle,
+          comment: reviewComment,
+          images: reviewImages,
+        }),
+      })
+
+      if (res.ok) {
+        toast.success(reviewsData.userReview ? 'Review updated!' : 'Thank you! Your review has been submitted.')
+        loadReviews()
+      } else {
+        const json = await res.json()
+        toast.error(json.error || 'Failed to submit review')
+      }
+    } catch {
+      toast.error('Error submitting review')
+    } finally {
+      setSubmittingReview(false)
+    }
+  }
+
+  const handleDeleteReview = async () => {
+    if (!confirm('Are you sure you want to delete your review?')) return
+    try {
+      const token = localStorage.getItem('userToken') || localStorage.getItem('adminToken') || ''
+      const res = await fetch(`/api/reviews?product_id=${product.id}`, {
+        method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      })
+      if (res.ok) {
+        toast.success('Review deleted')
+        setReviewRating(5)
+        setReviewTitle('')
+        setReviewComment('')
+        setReviewImages([])
+        loadReviews()
+      }
+    } catch {
+      toast.error('Failed to delete review')
+    }
   }
 
   return (
@@ -238,21 +390,19 @@ export default function ProductDetailClient({ product, related }: Props) {
             {product.name}
           </h1>
 
-          {/* Rating */}
-          {product.rating_count > 0 && (
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex items-center">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-4 h-4 ${i < Math.round(product.rating) ? 'fill-foreground text-foreground' : 'text-border'}`}
-                  />
-                ))}
-              </div>
-              <span className="text-sm font-medium">{product.rating.toFixed(1)}</span>
-              <span className="text-sm text-muted-foreground">({product.rating_count.toLocaleString()} reviews)</span>
+          {/* Rating Summary Header */}
+          <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star
+                  key={i}
+                  className={`w-4 h-4 ${i < Math.round(reviewsData.averageRating) ? 'fill-foreground text-foreground' : 'text-border'}`}
+                />
+              ))}
             </div>
-          )}
+            <span className="text-sm font-bold">{reviewsData.averageRating > 0 ? reviewsData.averageRating.toFixed(1) : 'New'}</span>
+            <span className="text-sm text-muted-foreground">({reviewsData.totalReviews} customer rating{reviewsData.totalReviews === 1 ? '' : 's'})</span>
+          </div>
 
           {/* Price */}
           <div className="flex items-baseline gap-3 mb-5">
@@ -367,7 +517,7 @@ export default function ProductDetailClient({ product, related }: Props) {
         </div>
       </div>
 
-      {/* New Product Details Section immediately below product description */}
+      {/* Product Details Section */}
       <section className="mt-12 border-t border-border pt-8">
         <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
           <Info className="w-5 h-5" /> Product Details & Specifications
@@ -412,6 +562,218 @@ export default function ProductDetailClient({ product, related }: Props) {
               <p><span className="font-semibold text-muted-foreground">Authenticity:</span> 100% Genuine ZYRØCORE Guarantee</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Customer Ratings & Reviews Section */}
+      <section className="mt-16 border-t border-border pt-10">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <div>
+            <h2 className="text-2xl font-bold text-foreground">Customer Reviews & Ratings</h2>
+            <p className="text-sm text-muted-foreground mt-1">Real feedback from verified ZYRØCORE customers</p>
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8 mb-12">
+          {/* Overall Rating Score Card */}
+          <div className="bg-card border border-border rounded-xl p-6 flex flex-col items-center justify-center text-center">
+            <p className="text-5xl font-black text-foreground mb-2">
+              {reviewsData.averageRating > 0 ? reviewsData.averageRating.toFixed(1) : '0.0'}
+            </p>
+            <div className="flex items-center gap-1 mb-2">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star
+                  key={i}
+                  className={`w-5 h-5 ${i < Math.round(reviewsData.averageRating) ? 'fill-foreground text-foreground' : 'text-border'}`}
+                />
+              ))}
+            </div>
+            <p className="text-sm text-muted-foreground font-medium">Based on {reviewsData.totalReviews} review{reviewsData.totalReviews === 1 ? '' : 's'}</p>
+          </div>
+
+          {/* Rating Distribution Breakdown Bars */}
+          <div className="md:col-span-2 bg-card border border-border rounded-xl p-6 space-y-2.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">Rating Breakdown</h3>
+            {[5, 4, 3, 2, 1].map(star => {
+              const count = reviewsData.breakdown[star] || 0
+              const percentage = reviewsData.totalReviews > 0 ? Math.round((count / reviewsData.totalReviews) * 100) : 0
+              return (
+                <div key={star} className="flex items-center gap-3 text-xs">
+                  <span className="w-8 font-semibold text-foreground flex items-center gap-0.5">{star} <Star className="w-3 h-3 fill-foreground inline" /></span>
+                  <div className="flex-1 h-2.5 bg-muted rounded-full overflow-hidden">
+                    <div className="h-full bg-foreground transition-all duration-500 rounded-full" style={{ width: `${percentage}%` }} />
+                  </div>
+                  <span className="w-12 text-right text-muted-foreground font-mono">{count} ({percentage}%)</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Submit or Edit Review Form */}
+        <div className="bg-card border border-border rounded-xl p-6 mb-10 shadow-sm">
+          <h3 className="text-lg font-bold text-foreground mb-4">
+            {reviewsData.userReview ? 'Edit Your Review' : 'Write a Customer Review'}
+          </h3>
+
+          {!user ? (
+            <div className="text-center py-6 border border-dashed border-border rounded-lg">
+              <p className="text-sm text-muted-foreground mb-3">Please sign in to share your experience with this product.</p>
+              <Button asChild size="sm"><Link href="/login">Sign In to Review</Link></Button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmitReview} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase text-muted-foreground mb-2">Select Your Rating *</label>
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map(star => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setReviewRating(star)}
+                      className="p-1 hover:scale-110 transition-transform"
+                    >
+                      <Star
+                        className={`w-7 h-7 cursor-pointer ${
+                          star <= reviewRating ? 'fill-foreground text-foreground' : 'text-border'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                  <span className="text-sm font-semibold text-foreground ml-3">{reviewRating} out of 5 Stars</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-muted-foreground mb-1.5">Review Headline</label>
+                <input
+                  value={reviewTitle}
+                  onChange={e => setReviewTitle(e.target.value)}
+                  placeholder="e.g. Excellent fit & premium material quality!"
+                  className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-muted-foreground mb-1.5">Review Details</label>
+                <textarea
+                  value={reviewComment}
+                  onChange={e => setReviewComment(e.target.value)}
+                  rows={3}
+                  placeholder="Share details about the fabric, sizing, comfort, and performance..."
+                  className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground resize-none"
+                />
+              </div>
+
+              {/* Review Photo Upload */}
+              <div>
+                <label className="block text-xs font-bold uppercase text-muted-foreground mb-1.5">Attach Review Photos (Optional)</label>
+                <div className="flex items-center gap-3">
+                  <label className="cursor-pointer inline-flex items-center gap-2 bg-muted hover:bg-muted/80 text-foreground text-xs font-semibold px-3 py-2 rounded-lg border border-border transition-colors">
+                    <Camera className="w-4 h-4" />
+                    {uploadingReviewImg ? 'Uploading...' : 'Add Photos'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={handleReviewImageUpload}
+                      disabled={uploadingReviewImg || reviewImages.length >= 3}
+                    />
+                  </label>
+                  <span className="text-xs text-muted-foreground">{reviewImages.length}/3 photos attached</span>
+                </div>
+
+                {reviewImages.length > 0 && (
+                  <div className="flex gap-2 mt-3">
+                    {reviewImages.map((imgUrl, i) => (
+                      <div key={i} className="relative w-14 h-14 rounded-lg overflow-hidden border border-border group">
+                        <img src={imgUrl} alt="Review attachment" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => setReviewImages(prev => prev.filter((_, idx) => idx !== i))}
+                          className="absolute top-0.5 right-0.5 bg-red-600 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center gap-3 pt-2">
+                <Button type="submit" disabled={submittingReview} size="sm">
+                  {submittingReview ? 'Submitting...' : reviewsData.userReview ? 'Update Review' : 'Submit Review'}
+                </Button>
+                {reviewsData.userReview && (
+                  <Button type="button" variant="outline" size="sm" onClick={handleDeleteReview} className="text-red-600 hover:text-red-700">
+                    <Trash2 className="w-4 h-4 mr-1" /> Delete Review
+                  </Button>
+                )}
+              </div>
+            </form>
+          )}
+        </div>
+
+        {/* Customer Reviews List */}
+        <div className="space-y-4">
+          {loadingReviews ? (
+            <div className="py-12 text-center text-sm text-muted-foreground">Loading customer reviews...</div>
+          ) : reviewsData.reviews.length === 0 ? (
+            <div className="text-center py-12 bg-card border border-border rounded-xl">
+              <MessageSquare className="w-10 h-10 text-muted-foreground mx-auto mb-2" />
+              <p className="font-semibold text-foreground">No customer reviews yet</p>
+              <p className="text-xs text-muted-foreground mt-1">Be the first customer to leave a review for this product!</p>
+            </div>
+          ) : (
+            reviewsData.reviews.map(rev => (
+              <div key={rev.id} className="bg-card border border-border rounded-xl p-5 space-y-2.5 shadow-sm">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-foreground text-background font-bold text-xs flex items-center justify-center">
+                      {rev.user_name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                        {rev.user_name}
+                        {rev.is_verified && (
+                          <span className="inline-flex items-center gap-0.5 text-[10px] bg-green-50 text-green-700 border border-green-200 px-1.5 py-0.5 rounded-full font-semibold">
+                            <ShieldCheck className="w-3 h-3" /> Verified Buyer
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    {new Intl.DateTimeFormat('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(rev.created_at))}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-4 h-4 ${i < rev.rating ? 'fill-foreground text-foreground' : 'text-border'}`}
+                    />
+                  ))}
+                </div>
+
+                {rev.title && <h4 className="font-semibold text-sm text-foreground">{rev.title}</h4>}
+                {rev.comment && <p className="text-sm text-muted-foreground leading-relaxed">{rev.comment}</p>}
+
+                {rev.images && rev.images.length > 0 && (
+                  <div className="flex gap-2 pt-2">
+                    {rev.images.map((img, i) => (
+                      <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden border border-border">
+                        <img src={img} alt="Customer attachment" className="w-full h-full object-cover" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))
+          )}
         </div>
       </section>
 
