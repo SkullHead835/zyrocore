@@ -24,6 +24,11 @@ const slides = [
 
 export default function HeroSection() {
   const [current, setCurrent] = useState(0)
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -40,16 +45,22 @@ export default function HeroSection() {
         {/* Left: Text content */}
         <div className="relative flex items-center justify-center md:justify-start md:items-center p-6 md:p-12 lg:p-16">
           <div className="max-w-md">
-            <p className="text-xs font-semibold uppercase tracking-widest mb-6 text-accent">
-              ZYRØCORE Collection
-            </p>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-balance leading-tight text-foreground">
-              {slide.title}
-            </h1>
-            <p className="text-lg md:text-xl mb-10 text-muted-foreground leading-relaxed">
-              {slide.subtitle}
-            </p>
-            <div className="flex items-center gap-4">
+            <div className={`transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+              <p className="text-xs font-semibold uppercase tracking-widest mb-6 text-accent">
+                ZYRØCORE Collection
+              </p>
+            </div>
+            <div className={`transition-all duration-1000 delay-150 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-balance leading-tight text-foreground">
+                {slide.title}
+              </h1>
+            </div>
+            <div className={`transition-all duration-1000 delay-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+              <p className="text-lg md:text-xl mb-10 text-muted-foreground leading-relaxed">
+                {slide.subtitle}
+              </p>
+            </div>
+            <div className={`flex items-center gap-4 transition-all duration-1000 delay-450 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
               <Button
                 size="lg"
                 className="bg-accent hover:bg-accent/90 text-accent-foreground"
@@ -65,7 +76,7 @@ export default function HeroSection() {
         </div>
 
         {/* Right: Product image */}
-        <div className="relative hidden md:flex items-center justify-center p-8 lg:p-12">
+        <div className={`relative hidden md:flex items-center justify-center p-8 lg:p-12 transition-all duration-1000 delay-200 ${isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
           <div className="relative w-full h-full flex items-center justify-center">
             <img
               src={slide.image}

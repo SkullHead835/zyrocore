@@ -1,4 +1,7 @@
+'use client'
+
 import { Truck, RotateCcw, Shield, Sparkles } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 const features = [
   { icon: Truck, title: 'Free Shipping', desc: 'On orders over ₹999' },
@@ -8,12 +11,24 @@ const features = [
 ]
 
 export default function BannerStrip() {
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
+
   return (
     <section className="bg-secondary/50 border-y border-border py-12 md:py-16">
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-6">
-          {features.map(({ icon: Icon, title, desc }) => (
-            <div key={title} className="flex flex-col items-center md:items-start gap-3 text-center md:text-left">
+          {features.map(({ icon: Icon, title, desc }, i) => (
+            <div 
+              key={title} 
+              className={`flex flex-col items-center md:items-start gap-3 text-center md:text-left transform transition-all duration-700 ${
+                isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+              }`}
+              style={{ transitionDelay: `${i * 100}ms` }}
+            >
               <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
                 <Icon className="w-6 h-6 text-accent" />
               </div>

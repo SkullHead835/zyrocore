@@ -21,7 +21,7 @@ import { useCart } from './cart-provider'
 const mainNav = [
   { label: 'Home', href: '/' },
   { label: 'Shop', href: '/products' },
-  { label: 'Story', href: '#story' },
+  { label: 'Story', href: '/story' },
   { label: 'Contact', href: '#contact' },
 ]
 

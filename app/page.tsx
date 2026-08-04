@@ -1,7 +1,6 @@
 import Header from '@/components/header'
 import Footer from '@/components/footer'
 import HeroSection from './home/hero-section'
-import JourneySection from './home/journey-section'
 import FeaturedProducts from './home/featured-products'
 import NewArrivalsSection from './home/new-arrivals-section'
 import BestSellers from './home/best-sellers'
@@ -28,7 +27,6 @@ export default async function HomePage() {
       <Header />
       <main className="flex-1">
         <HeroSection />
-        <JourneySection />
         {hasProds ? (
           <>
             <NewArrivalsSection />

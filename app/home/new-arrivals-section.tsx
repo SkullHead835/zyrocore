@@ -12,6 +12,11 @@ import type { Product } from '@/lib/types'
 export default function NewArrivalsSection() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
 
   useEffect(() => {
     fetch('/api/products')
@@ -75,7 +80,10 @@ export default function NewArrivalsSection() {
           return (
             <div
               key={product.id}
-              className="group relative bg-card border border-border rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col"
+              className={`group relative bg-card border border-border rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col transform ${
+                isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+              }`}
+              style={{ transitionDelay: `${100 + idx * 100}ms` }}
             >
               {/* Image Container with Smooth Hover Zoom */}
               <div className="relative aspect-[3/4] w-full overflow-hidden bg-muted">
