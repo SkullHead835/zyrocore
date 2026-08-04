@@ -31,7 +31,7 @@ const slides = [
     href: '/products?category=party-wear',
     bg: 'bg-foreground',
     text: 'text-background',
-    image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=1200&q=80',
+    image: 'https://www.mydesignation.com/cdn/shop/files/green-panel-409122.jpg?v=1735912357&width=750',
   },
 ]
 
@@ -101,11 +101,10 @@ export default function HeroSection() {
             onClick={() => setCurrent(i)}
             aria-label={`Go to slide ${i + 1}`}
             suppressHydrationWarning
-            className={`rounded-full transition-all duration-200 ${
-              i === current
+            className={`rounded-full transition-all duration-200 ${i === current
                 ? 'w-6 h-2 bg-background/80'
                 : 'w-2 h-2 bg-background/40 hover:bg-background/60'
-            }`}
+              }`}
           />
         ))}
       </div>
