@@ -21,10 +21,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
-    // Validate size (max 5MB)
-    const MAX_SIZE = 5 * 1024 * 1024
+    // Validate size (max 50MB)
+    const MAX_SIZE = 50 * 1024 * 1024
     if (file.size > MAX_SIZE) {
-      return NextResponse.json({ error: 'File size exceeds 5MB limit' }, { status: 400 })
+      return NextResponse.json({ error: 'File size exceeds 50MB limit' }, { status: 400 })
     }
 
     // Validate mime type & extensions (JPG, JPEG, PNG, WEBP, AVIF, SVG)

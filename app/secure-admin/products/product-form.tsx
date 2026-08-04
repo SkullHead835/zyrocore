@@ -57,8 +57,8 @@ export default function ProductForm({ productId }: ProductFormProps) {
         toast.error(`File "${f.name}" is not a supported image format (JPG, JPEG, PNG, WEBP, AVIF, SVG).`)
         continue
       }
-      if (f.size > 5 * 1024 * 1024) {
-        toast.error(`File "${f.name}" exceeds the 5MB size limit.`)
+      if (f.size > 50 * 1024 * 1024) {
+        toast.error(`File "${f.name}" exceeds the 50MB size limit.`)
         continue
       }
       validFiles.push(f)
@@ -236,7 +236,7 @@ export default function ProductForm({ productId }: ProductFormProps) {
           <div className="bg-white border border-neutral-200 rounded-xl p-5 space-y-3 shadow-sm">
             <div className="flex items-center justify-between">
               <h2 className="text-neutral-900 text-sm font-bold">Product Images ({form.images.length}/5)</h2>
-              <span className="text-neutral-400 text-xs font-medium">JPG, JPEG, PNG, WEBP, AVIF (Max 5MB)</span>
+              <span className="text-neutral-400 text-xs font-medium">JPG, JPEG, PNG, WEBP, AVIF (Max 50MB)</span>
             </div>
 
             {/* Drop zone */}
