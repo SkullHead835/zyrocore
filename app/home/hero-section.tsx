@@ -17,7 +17,7 @@ const slides = [
   },
   {
     title: 'Men\'s Formals',
-    subtitle: 'Effortless sophistication for every occasion — tailored suits, shirts and dress wear.',
+    subtitle: 'Stop following trends, be Timeless.',
     cta: 'Shop Formals',
     href: '/products?category=formals',
     bg: 'bg-secondary',
