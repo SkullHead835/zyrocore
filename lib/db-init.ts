@@ -4,6 +4,13 @@ let initialized = false
 
 export async function ensureDbSchema() {
   if (initialized) return
+
+  const dbUrl = process.env.DATABASE_URL || ''
+  if (!dbUrl || dbUrl.includes('placeholder')) {
+    // Unconfigured or placeholder database environment
+    return
+  }
+
   try {
     // 1. Add missing columns to users table
     await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP DEFAULT NOW()`
@@ -41,6 +48,6 @@ export async function ensureDbSchema() {
 
     initialized = true
   } catch (err) {
-    console.error('[db-init] Schema initialization failed:', err)
+    console.warn('[db-init] Schema initialization skipped or failed:', err)
   }
 }

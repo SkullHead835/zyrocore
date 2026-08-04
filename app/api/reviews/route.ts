@@ -3,6 +3,8 @@ import sql from '@/lib/db'
 import { getSession } from '@/lib/auth'
 import { ensureDbSchema } from '@/lib/db-init'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(req: NextRequest) {
   try {
     await ensureDbSchema()
